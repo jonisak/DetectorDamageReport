@@ -5,121 +5,92 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DetectorDamageReport.Model;
+using DetectorDamageReport.Models;
+using DetectorDamageReport.Models.Repository;
 
 namespace DetectorDamageReport.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly DetectorDamageReportContext _context;
+        private readonly IDataRepository<User> _dataRepository;
 
-        public UsersController(DetectorDamageReportContext context)
+        public UserController(IDataRepository<User> dataRepository)
         {
-            _context = context;
+            _dataRepository = dataRepository;
         }
 
-        // GET: api/Users
+        // GET: api/Employee
         [HttpGet]
-        public IEnumerable<User> GetUsers()
+        public IActionResult Get()
         {
-            return _context.Users;
+            IEnumerable<User> users = _dataRepository.GetAll();
+            return Ok(users);
         }
 
-        // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser([FromRoute] long id)
+        // GET: api/Employee/5
+        [HttpGet("{id}", Name = "Get")]
+        public IActionResult Get(long id)
         {
-            if (!ModelState.IsValid)
+            User employee = _dataRepository.Get(id);
+
+            if (employee == null)
             {
-                return BadRequest(ModelState);
+                return NotFound("The Employee record couldn't be found.");
             }
 
-            var user = await _context.Users.FindAsync(id);
+            return Ok(employee);
+        }
 
+        // POST: api/Employee
+        [HttpPost]
+        public IActionResult Post([FromBody] User user)
+        {
             if (user == null)
             {
-                return NotFound();
+                return BadRequest("Employee is null.");
             }
 
-            return Ok(user);
+            _dataRepository.Add(user);
+            return CreatedAtRoute(
+                  "Get",
+                  new { Id = user.UserId },
+                  user);
         }
 
-        // PUT: api/Users/5
+        // PUT: api/Employee/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser([FromRoute] long id, [FromBody] User user)
+        public IActionResult Put(long id, [FromBody] User user)
         {
-            if (!ModelState.IsValid)
+            if (user == null)
             {
-                return BadRequest(ModelState);
+                return BadRequest("User is null.");
             }
 
-            if (id != user.UserId)
+            User userToUpdate = _dataRepository.Get(id);
+            if (userToUpdate == null)
             {
-                return BadRequest();
+                return NotFound("The User record couldn't be found.");
             }
 
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            _dataRepository.Update(userToUpdate, user);
             return NoContent();
         }
 
-        // POST: api/Users
-        [HttpPost]
-        public async Task<IActionResult> PostUser([FromBody] User user)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.UserId }, user);
-        }
-
-        // DELETE: api/Users/5
+        // DELETE: api/Employee/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser([FromRoute] long id)
+        public IActionResult Delete(long id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var user = await _context.Users.FindAsync(id);
+            User user = _dataRepository.Get(id);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("The Employee record couldn't be found.");
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return Ok(user);
-        }
-
-        private bool UserExists(long id)
-        {
-            return _context.Users.Any(e => e.UserId == id);
+            _dataRepository.Delete(user);
+            return NoContent();
         }
     }
+
 }
