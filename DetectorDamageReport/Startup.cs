@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Http;
 using DetectorDamageReport.Services;
 using DetectorDamageReport.Models.Repository;
 using DetectorDamageReport.Models.DataManager;
+using Microsoft.AspNetCore.Authentication;
+using DetectorDamageReport.Helpers;
 
 namespace DetectorDamageReport
 {
@@ -34,7 +36,7 @@ namespace DetectorDamageReport
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DetectorDamageReportContext>(options =>options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DetectorDamageReportContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IDataRepository<User>, UserManager>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -46,7 +48,11 @@ namespace DetectorDamageReport
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddAuthentication("BasicAuthentication")
+            .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
+            // configure DI for application services
+            services.AddScoped<IUserService, UserService>();
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             //var connection = @"Server=.;Database=DetectorDamageReport;Trusted_Connection=True;ConnectRetryCount=0";
@@ -64,6 +70,16 @@ namespace DetectorDamageReport
             {
                 app.UseHsts();
             }
+
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+
+            app.UseAuthentication();
+
 
             app.UseHttpsRedirection();
             app.UseMvc();

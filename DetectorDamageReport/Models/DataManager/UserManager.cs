@@ -17,6 +17,11 @@ namespace DetectorDamageReport.Models.DataManager
             _detectorDamageReportContext = context;
         }
 
+        public UserManager()
+        {
+            _detectorDamageReportContext = new DetectorDamageReportContext();
+        }
+
         public IEnumerable<User> GetAll()
         {
             return _detectorDamageReportContext.User.ToList();
@@ -26,6 +31,11 @@ namespace DetectorDamageReport.Models.DataManager
         {
             return _detectorDamageReportContext.User
                   .FirstOrDefault(e => e.UserId == id);
+        }
+        public User GetByUsername(string username)
+        {
+            return _detectorDamageReportContext.User
+                  .FirstOrDefault(e => e.UserName == username);
         }
 
         public void Add(User entity)

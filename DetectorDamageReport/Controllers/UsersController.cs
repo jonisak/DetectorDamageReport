@@ -7,18 +7,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DetectorDamageReport.Models;
 using DetectorDamageReport.Models.Repository;
+using Microsoft.AspNetCore.Authorization;
+using DetectorDamageReport.Services;
 
 namespace DetectorDamageReport.Controllers
 {
     [Route("api/user")]
     [ApiController]
+    [Authorize]
+
     public class UserController : ControllerBase
     {
         private readonly IDataRepository<User> _dataRepository;
+        private IUserService _userService;
 
-        public UserController(IDataRepository<User> dataRepository)
+        public UserController(IDataRepository<User> dataRepository, IUserService userService)
         {
             _dataRepository = dataRepository;
+            _userService = userService;
+
         }
 
         // GET: api/Employee
