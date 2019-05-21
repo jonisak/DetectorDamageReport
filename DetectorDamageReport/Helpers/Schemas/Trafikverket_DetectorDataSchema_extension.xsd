@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 sp1 (http://www.altova.com) by Mattias Thuresson (private) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:trv="urn:se:trafikverket:extension:xsd:1" targetNamespace="urn:se:trafikverket:extension:xsd:1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="HotBoxHotWheelMeasureWheelData" type="trv:HotBoxHotWheelMeasureDataWheelType">
+    <xs:annotation>
+      <xs:documentation>Comment describing your root element</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="HotBoxHotWheelMeasureDataWheelType">
+    <xs:sequence>
+      <xs:element name="HotBoxLeftValue" type="xs:float" minOccurs="0"/>
+      <xs:element name="HotBoxRightValue" type="xs:float" minOccurs="0"/>
+      <xs:element name="HotWheelLeftValue" type="xs:float" minOccurs="0"/>
+      <xs:element name="HotWheelRightValue" type="xs:float" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="WheelDamageMeasureDataAxleType">
+    <xs:sequence>
+      <xs:element name="AxleLoad" type="xs:float" minOccurs="0"/>
+      <xs:element name="LeftRightLoadRatio" type="xs:float" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="WheelDamageMeasureDataWheelType">
+    <xs:sequence>
+      <xs:element name="LeftWheelDamageDistributedLoadValue" type="xs:float" minOccurs="0"/>
+      <xs:element name="LeftWheelDamageMeanValue" type="xs:float" minOccurs="0"/>
+      <xs:element name="LeftWheelDamagePeakValue" type="xs:float" minOccurs="0"/>
+      <xs:element name="LeftWheelDamageQualityFactor" type="xs:float" minOccurs="0"/>
+      <xs:element name="RightWheelDamageDistributedLoadValue" type="xs:float" minOccurs="0"/>
+      <xs:element name="RightWheelDamageMeanValue" type="xs:float" minOccurs="0"/>
+      <xs:element name="RightWheelDamagePeakValue" type="xs:float" minOccurs="0"/>
+      <xs:element name="RightWheelDamageQualityFactor" type="xs:float" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="WheelDamageMeasureDataAxle" type="trv:WheelDamageMeasureDataAxleType"/>
+  <xs:element name="WheelDamageMeasureDataWheel" type="trv:WheelDamageMeasureDataWheelType"/>
+  <xs:complexType name="WheelDamageMeasureDataVehicleType">
+    <xs:sequence>
+      <xs:element name="FrontRearLoadRatio" type="xs:float"/>
+      <xs:element name="LeftRightLoadRatio" type="xs:float"/>
+      <xs:element name="WeightInTons" type="xs:float"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="WheelDamageMeasureDataVehicle" type="trv:WheelDamageMeasureDataVehicleType"/>
+  <xs:complexType name="SubscriberDestinationType">
+    <xs:attribute name="SubscriberDesinationURN" type="xs:string"/>
+    <xs:attribute name="SubscriberDesinationType" type="xs:int"/>
+  </xs:complexType>
+  <xs:element name="SubscriberDestination" type="trv:SubscriberDestinationType"/>
+  <xs:complexType name="TagIDType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string"/>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:element name="TagID" type="trv:TagIDType"/>
+</xs:schema>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 sp1 (http://www.altova.com) by Mattias Thuresson (private) -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:trv="urn:se:trafikverket:extension:xsd:1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:import namespace="urn:se:trafikverket:extension:xsd:1" schemaLocation="Trafikverket_DetectorDataSchema_extension.xsd"/>
+  <xsd:element name="DetectorDataMessage">
+    <xsd:annotation>
+      <xsd:documentation>Comment describing your root element</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Header" type="HeaderType"/>
+        <xsd:element name="Location" type="LocationType"/>
+        <xsd:element name="Train" type="TrainType"/>
+        <xsd:element ref="trv:SubscriberDestination" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="HeaderType">
+    <xsd:sequence>
+      <xsd:element name="MessageID" type="xsd:string"/>
+      <xsd:element name="Vendor" type="xsd:string"/>
+      <xsd:element name="SoftwareVersion" type="xsd:string"/>
+      <xsd:element name="SendTimeStamp" type="xsd:dateTime"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="LocationType">
+    <xsd:sequence>
+      <xsd:element name="LocationID" type="xsd:string"/>
+      <xsd:element name="CountryCode" type="xsd:string"/>
+      <xsd:element name="Owner" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="Track" type="xsd:string"/>
+      <xsd:element name="TrackSection" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="TrainType">
+    <xsd:sequence>
+      <xsd:element name="Operator" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="TrainNumber" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="Direction" type="xsd:string"/>
+      <xsd:element name="VehicleCount" type="xsd:integer" minOccurs="0"/>
+      <xsd:element name="MeasurementValues" type="MeasurementDataType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="Alert" type="AlertType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="Vehicle" type="VehicleType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="MeasurementDataType">
+    <xsd:sequence>
+      <xsd:element name="DeviceType" type="xsd:string"/>
+      <xsd:element name="SoftwareVersion" type="xsd:string"/>
+      <xsd:element name="HardwareVersion" type="xsd:string"/>
+      <xsd:element name="Vendor" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="MeasurementData">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element ref="trv:HotBoxHotWheelMeasureWheelData" minOccurs="0"/>
+            <xsd:element ref="trv:WheelDamageMeasureDataAxle" minOccurs="0"/>
+            <xsd:element ref="trv:WheelDamageMeasureDataWheel" minOccurs="0"/>
+            <xsd:element ref="trv:WheelDamageMeasureDataVehicle" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="AlertType">
+    <xsd:sequence>
+      <xsd:element name="MeasurementType" type="xsd:string"/>
+      <xsd:element name="DecriptionText" type="xsd:string"/>
+      <xsd:element name="AlarmCode" type="xsd:string"/>
+      <xsd:element name="Level" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="VehicleType">
+    <xsd:sequence>
+      <xsd:element name="VehicleNumber" type="xsd:integer"/>
+      <xsd:element name="Speed" type="xsd:float"/>
+      <xsd:element name="AxleCount" type="xsd:integer"/>
+      <xsd:element name="MeasurementValues" type="MeasurementDataType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="Alert" type="AlertType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="Axle" type="AxleType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element ref="trv:TagID" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="AxleType">
+    <xsd:sequence>
+      <xsd:element name="AxleNumber" type="xsd:integer"/>
+      <xsd:element name="MeasurementValues" type="MeasurementDataType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="Alert" type="AlertType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="Wheel" type="WheelType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="WheelType">
+    <xsd:sequence>
+      <xsd:element name="MeasurementValues" type="MeasurementDataType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="Alert" type="AlertType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>

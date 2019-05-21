@@ -39,6 +39,7 @@ namespace DetectorDamageReport
             services.AddDbContext<DetectorDamageReportContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IDataRepository<User>, UserManager>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvcCore().AddJsonFormatters().AddXmlSerializerFormatters();
 
 
             services.Configure<CookiePolicyOptions>(options =>
@@ -53,10 +54,6 @@ namespace DetectorDamageReport
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
-            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            //var connection = @"Server=.;Database=DetectorDamageReport;Trusted_Connection=True;ConnectRetryCount=0";
-            //services.AddDbContext<DetectorDamageReportContext>(options => options.UseSqlServer(connection));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
