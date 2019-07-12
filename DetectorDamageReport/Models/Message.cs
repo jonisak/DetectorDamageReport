@@ -7,21 +7,18 @@ namespace DetectorDamageReport.Models
     {
         public Message()
         {
-            Vehicle = new HashSet<Vehicle>();
+            Train = new HashSet<Train>();
         }
 
         public long MessageId { get; set; }
+        public string Vendor { get; set; }
+        public string SoftwareVersion { get; set; }
         public DateTime SendTimeStamp { get; set; }
         public string LocationId { get; set; }
         public string CountryCode { get; set; }
         public string Owner { get; set; }
         public string Track { get; set; }
-        public int TrainOperatorId { get; set; }
-        public string TrainNumber { get; set; }
-        public int TrainDirectionId { get; set; }
 
-        public virtual Traindirection TrainDirection { get; set; }
-        public virtual TrainOperator TrainOperator { get; set; }
-        public virtual ICollection<Vehicle> Vehicle { get; set; }
+        public virtual ICollection<Train> Train { get; set; }
     }
 }

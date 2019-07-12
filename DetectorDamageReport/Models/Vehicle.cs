@@ -8,17 +8,17 @@ namespace DetectorDamageReport.Models
         public Vehicle()
         {
             Axle = new HashSet<Axle>();
-            WheelDamageMeasureDataVehicle = new HashSet<WheelDamageMeasureDataVehicle>();
+            MeasurementValue = new HashSet<MeasurementValue>();
         }
 
         public long VehicleId { get; set; }
         public string VehicleNumber { get; set; }
         public int? Speed { get; set; }
         public int? AxleCount { get; set; }
-        public long MessageId { get; set; }
+        public long TrainId { get; set; }
 
-        public virtual Message Message { get; set; }
+        public virtual Train Train { get; set; }
         public virtual ICollection<Axle> Axle { get; set; }
-        public virtual ICollection<WheelDamageMeasureDataVehicle> WheelDamageMeasureDataVehicle { get; set; }
+        public virtual ICollection<MeasurementValue> MeasurementValue { get; set; }
     }
 }

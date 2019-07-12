@@ -40,7 +40,9 @@ namespace DetectorDamageReport
             services.AddScoped<IDataRepository<User>, UserManager>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddMvcCore().AddJsonFormatters().AddXmlSerializerFormatters();
+            //AppContext.SetSwitch("Switch.System.Xml.AllowDefaultResolver", true);
 
+            //services.AddMvcCore().AddJsonFormatters().AddXmlFormaterExtensions();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

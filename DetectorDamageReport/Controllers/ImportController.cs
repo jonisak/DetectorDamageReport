@@ -35,6 +35,7 @@ namespace DetectorDamageReport.Controllers
            new DetectorDataMessageManager().Add(detectorDataMessage);
 
 
+
             return null;
 
 

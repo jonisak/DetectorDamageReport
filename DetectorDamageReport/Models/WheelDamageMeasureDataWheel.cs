@@ -14,8 +14,8 @@ namespace DetectorDamageReport.Models
         public int? RightWheelDamageMeanValue { get; set; }
         public int? RightWheelDamagePeakValue { get; set; }
         public int? RightWheelDamageQualityFactor { get; set; }
-        public long WheelId { get; set; }
+        public long MeasurementValueId { get; set; }
 
-        public virtual Wheel Wheel { get; set; }
+        public virtual MeasurementValue MeasurementValue { get; set; }
     }
 }
