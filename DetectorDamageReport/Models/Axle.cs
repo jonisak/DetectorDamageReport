@@ -7,6 +7,7 @@ namespace DetectorDamageReport.Models
     {
         public Axle()
         {
+            Alert = new HashSet<Alert>();
             MeasurementValue = new HashSet<MeasurementValue>();
             Wheel = new HashSet<Wheel>();
         }
@@ -16,6 +17,7 @@ namespace DetectorDamageReport.Models
         public long VehicleId { get; set; }
 
         public virtual Vehicle Vehicle { get; set; }
+        public virtual ICollection<Alert> Alert { get; set; }
         public virtual ICollection<MeasurementValue> MeasurementValue { get; set; }
         public virtual ICollection<Wheel> Wheel { get; set; }
     }

@@ -18,6 +18,7 @@ namespace DetectorDamageReport.Models
         public string CountryCode { get; set; }
         public string Owner { get; set; }
         public string Track { get; set; }
+        public DateTime ImportedTimeStamp { get; set; }
 
         public virtual ICollection<Train> Train { get; set; }
     }

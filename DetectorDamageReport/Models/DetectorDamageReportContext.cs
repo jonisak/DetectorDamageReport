@@ -15,6 +15,7 @@ namespace DetectorDamageReport.Models
         {
         }
 
+        public virtual DbSet<Alert> Alert { get; set; }
         public virtual DbSet<Axle> Axle { get; set; }
         public virtual DbSet<DeviceType> DeviceType { get; set; }
         public virtual DbSet<HotBoxHotWheelMeasureWheelData> HotBoxHotWheelMeasureWheelData { get; set; }
@@ -35,7 +36,7 @@ namespace DetectorDamageReport.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.;Database=DetectorDamageReport;ConnectRetryCount=0;User Id=DetectorDamageReport;Password=JanBanan76!;");
+                optionsBuilder.UseSqlServer("Server=.;Database=DetectorDamageReport;ConnectRetryCount=0;User Id=DetectorDamageReport;Password=JanBanan76!");
             }
         }
 
@@ -43,12 +44,51 @@ namespace DetectorDamageReport.Models
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
 
+            modelBuilder.Entity<Alert>(entity =>
+            {
+                entity.Property(e => e.AlarmCode)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.AlarmLevel)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.DecriptionText)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.MeasurementType)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.Axle)
+                    .WithMany(p => p.Alert)
+                    .HasForeignKey(d => d.AxleId)
+                    .HasConstraintName("FK_Alert_Axle");
+
+                entity.HasOne(d => d.Train)
+                    .WithMany(p => p.Alert)
+                    .HasForeignKey(d => d.TrainId)
+                    .HasConstraintName("FK_Alert_Train");
+
+                entity.HasOne(d => d.Vehicle)
+                    .WithMany(p => p.Alert)
+                    .HasForeignKey(d => d.VehicleId)
+                    .HasConstraintName("FK_Alert_Vehicle");
+
+                entity.HasOne(d => d.Wheel)
+                    .WithMany(p => p.Alert)
+                    .HasForeignKey(d => d.WheelId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Alert_Wheel");
+            });
+
             modelBuilder.Entity<Axle>(entity =>
             {
                 entity.HasOne(d => d.Vehicle)
                     .WithMany(p => p.Axle)
                     .HasForeignKey(d => d.VehicleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Axle_Vehicle");
             });
 
@@ -66,7 +106,6 @@ namespace DetectorDamageReport.Models
                 entity.HasOne(d => d.MeasurementValue)
                     .WithMany(p => p.HotBoxHotWheelMeasureWheelData)
                     .HasForeignKey(d => d.MeasurementValueId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_HotBoxHotWheelMeasureWheelData_MeasurementValue");
             });
 
@@ -114,6 +153,8 @@ namespace DetectorDamageReport.Models
                     .IsRequired()
                     .HasMaxLength(255);
 
+                entity.Property(e => e.ImportedTimeStamp).HasColumnType("datetime");
+
                 entity.Property(e => e.LocationId)
                     .IsRequired()
                     .HasColumnName("LocationID")
@@ -145,7 +186,6 @@ namespace DetectorDamageReport.Models
                 entity.HasOne(d => d.Message)
                     .WithMany(p => p.Train)
                     .HasForeignKey(d => d.MessageId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Train_Message");
 
                 entity.HasOne(d => d.TrainDirection)
@@ -196,7 +236,6 @@ namespace DetectorDamageReport.Models
                 entity.HasOne(d => d.Train)
                     .WithMany(p => p.Vehicle)
                     .HasForeignKey(d => d.TrainId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Vehicle_Train");
             });
 
@@ -205,14 +244,7 @@ namespace DetectorDamageReport.Models
                 entity.HasOne(d => d.Axle)
                     .WithMany(p => p.Wheel)
                     .HasForeignKey(d => d.AxleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Wheel_Axle");
-
-                entity.HasOne(d => d.DeviceType)
-                    .WithMany(p => p.Wheel)
-                    .HasForeignKey(d => d.DeviceTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Wheel_DeviceType");
             });
 
             modelBuilder.Entity<WheelDamageMeasureDataAxle>(entity =>
@@ -222,7 +254,6 @@ namespace DetectorDamageReport.Models
                 entity.HasOne(d => d.MeasurementValue)
                     .WithMany(p => p.WheelDamageMeasureDataAxle)
                     .HasForeignKey(d => d.MeasurementValueId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WheelDamageMeasureDataAxle_MeasurementValue");
             });
 
@@ -231,7 +262,6 @@ namespace DetectorDamageReport.Models
                 entity.HasOne(d => d.MeasurementValue)
                     .WithMany(p => p.WheelDamageMeasureDataVehicle)
                     .HasForeignKey(d => d.MeasurementValueId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WheelDamageMeasureDataVehicle_MeasurementValue");
             });
 
@@ -240,7 +270,6 @@ namespace DetectorDamageReport.Models
                 entity.HasOne(d => d.MeasurementValue)
                     .WithMany(p => p.WheelDamageMeasureDataWheel)
                     .HasForeignKey(d => d.MeasurementValueId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WheelDamageMeasureDataWheel_MeasurementValue");
             });
         }

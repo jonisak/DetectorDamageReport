@@ -23,11 +23,13 @@ namespace DetectorDamageReport.Models.DataManager
         public void Add(DetectorDataMessage detectorDataMessage)
         {
 
-            foreach (var item in _detectorDamageReportContext.Message.ToList())
-            {
-                _detectorDamageReportContext.Message.Remove(item);
-            }
-            _detectorDamageReportContext.SaveChanges();
+            //foreach (var item in _detectorDamageReportContext.Message.ToList())
+            //{
+            //    _detectorDamageReportContext.Message.Remove(item);
+            //}
+            //_detectorDamageReportContext.SaveChanges();
+
+
 
 
             var message = new Message();
@@ -39,6 +41,7 @@ namespace DetectorDamageReport.Models.DataManager
             message.CountryCode = detectorDataMessage.Location.CountryCode;
             message.Owner = detectorDataMessage.Location.Owner;
             message.Track = detectorDataMessage.Location.Track;
+            message.ImportedTimeStamp = DateTime.Now;
             _detectorDamageReportContext.Message.Add(message);
 
             var train = new Train();
@@ -58,9 +61,7 @@ namespace DetectorDamageReport.Models.DataManager
             {
                 train.TrainNumber = detectorDataMessage.Train.TrainNumber;
             }
-
-
-
+            #region Tågriktning
             if (detectorDataMessage.Train.Direction == "2")
             {
                 train.TrainDirectionId = 2;
@@ -73,15 +74,28 @@ namespace DetectorDamageReport.Models.DataManager
             {
                 train.TrainDirectionId = 3;
             }
-
+            #endregion
             if (detectorDataMessage.Train.VehicleCount != null && detectorDataMessage.Train.VehicleCount.Length > 0)
             {
                 train.VehicleCount = Convert.ToInt32(detectorDataMessage.Train.VehicleCount);
             }
+            #region Larm på tågnivå
+            if (detectorDataMessage.Train.Alert != null)
+            {
 
+                foreach (var al in detectorDataMessage.Train.Alert)
+                {
+                    var alert = new Alert();
+                    alert.Train = train;
+                    alert.AlarmCode = al.AlarmCode;
+                    alert.AlarmLevel = al.Level;
+                    alert.DecriptionText = al.DecriptionText;
+                    _detectorDamageReportContext.Alert.Add(alert);
+                }
+            }
+            #endregion
 
             _detectorDamageReportContext.Train.Add(train);
-
 
             foreach (var trainVehicle in detectorDataMessage.Train.Vehicle)
             {
@@ -92,6 +106,25 @@ namespace DetectorDamageReport.Models.DataManager
                 vehicle.Train = train;
                 _detectorDamageReportContext.Vehicle.Add(vehicle);
 
+                if (trainVehicle.Alert != null)
+                {
+
+                    foreach (var al in trainVehicle.Alert)
+                    {
+                        var alert = new Alert();
+                        alert.Vehicle = vehicle;
+                        alert.MeasurementType = al.MeasurementType;
+                        alert.AlarmCode = al.AlarmCode;
+                        alert.AlarmLevel = al.Level;
+                        alert.DecriptionText = al.DecriptionText;
+                        _detectorDamageReportContext.Alert.Add(alert);
+                    }
+                }
+
+
+
+
+                #region Mätvärden fordonsnivå (aka hjulskador)
                 //Mätvärden på fordonsnivå
                 if (trainVehicle.MeasurementValues != null && trainVehicle.MeasurementValues.Count() > 0)
                 {
@@ -99,13 +132,13 @@ namespace DetectorDamageReport.Models.DataManager
                     mv.Vehicle = vehicle;
                     foreach (var vme in trainVehicle.MeasurementValues)
                     {
+                        mv.DeviceType = _detectorDamageReportContext.DeviceType.Where(o => o.Name == vme.DeviceType).FirstOrDefault();
+                        mv.SoftwareVersion = vme.SoftwareVersion;
+                        mv.HardwareVersion = vme.HardwareVersion;
+                        mv.Vendor = vme.Vendor;
+
                         if (vme.DeviceType == "WHEELDAMAGE")
                         {
-                            mv.DeviceType.DeviceTypeId = _detectorDamageReportContext.DeviceType.Where(o => o.Name == vme.DeviceType).FirstOrDefault().DeviceTypeId;
-                            mv.SoftwareVersion = vme.SoftwareVersion;
-                            mv.HardwareVersion = vme.HardwareVersion;
-                            mv.Vendor = vme.Vendor;
-
                             _detectorDamageReportContext.MeasurementValue.Add(mv);
                             if (vme.MeasurementData.WheelDamageMeasureDataVehicle != null)
                             {
@@ -118,15 +151,12 @@ namespace DetectorDamageReport.Models.DataManager
                                     wheelDamageMeasureDataVehicle.WeightInTons = md.WeightInTons;
                                     _detectorDamageReportContext.WheelDamageMeasureDataVehicle.Add(wheelDamageMeasureDataVehicle);
                                 }
-
                             }
-
-
                         }
                     }
-
-
                 }
+
+                #endregion
 
                 //Loopa alla axlar
                 foreach (var ax in trainVehicle.Axle)
@@ -136,22 +166,45 @@ namespace DetectorDamageReport.Models.DataManager
                     _detectorDamageReportContext.Axle.Add(axle);
                     axle.AxleNumber = Convert.ToInt32(ax.AxleNumber);
 
-                    foreach (var axmv in ax.MeasurementValues)
+
+
+                    if (ax.Alert != null)
                     {
 
-                        var mv = new MeasurementValue();
-                        mv.Axle = axle;
-                        _detectorDamageReportContext.MeasurementValue.Add(mv);
-                        mv.SoftwareVersion = axmv.SoftwareVersion;
-                        mv.HardwareVersion = axmv.HardwareVersion;
-                        mv.Vendor = axmv.Vendor;
-                        if (axmv.DeviceType == "WHEELDAMAGE")
+                        foreach (var al in ax.Alert)
                         {
-                            mv.DeviceType.DeviceTypeId = _detectorDamageReportContext.DeviceType.Where(o => o.Name == axmv.DeviceType).FirstOrDefault().DeviceTypeId;
+                            var alert = new Alert();
+                            alert.Axle = axle;
+                            alert.MeasurementType = al.MeasurementType;
+                            alert.AlarmCode = al.AlarmCode;
+                            alert.AlarmLevel = al.Level;
+                            alert.DecriptionText = al.DecriptionText;
+                            _detectorDamageReportContext.Alert.Add(alert);
                         }
-
-
                     }
+
+                    if (ax.MeasurementValues != null)
+                    {
+                        foreach (var axmv in ax.MeasurementValues)
+                        {
+                            var mv = new MeasurementValue();
+                            mv.Axle = axle;
+                            _detectorDamageReportContext.MeasurementValue.Add(mv);
+                            mv.SoftwareVersion = axmv.SoftwareVersion;
+                            mv.HardwareVersion = axmv.HardwareVersion;
+                            mv.Vendor = axmv.Vendor;
+                            if (axmv.DeviceType == "WHEELDAMAGE")
+                            {
+                                mv.DeviceType = _detectorDamageReportContext.DeviceType.Where(o => o.Name == axmv.DeviceType).FirstOrDefault();
+                                var wheelDamageMeasureDataAxle = new WheelDamageMeasureDataAxle();
+                                wheelDamageMeasureDataAxle.AxleLoad = axmv.MeasurementData.WheelDamageMeasureDataAxle.AxleLoad;
+                                wheelDamageMeasureDataAxle.LeftRightLoadRatio = axmv.MeasurementData.WheelDamageMeasureDataAxle.LeftRightLoadRatio;
+                                wheelDamageMeasureDataAxle.MeasurementValue = mv;
+                                _detectorDamageReportContext.WheelDamageMeasureDataAxle.Add(wheelDamageMeasureDataAxle);
+                            }
+                        }
+                    }
+
 
 
                     foreach (var we in ax.Wheel)
@@ -159,14 +212,30 @@ namespace DetectorDamageReport.Models.DataManager
                         var wheel = new Wheel();
                         wheel.Axle = axle;
                         _detectorDamageReportContext.Wheel.Add(wheel);
+                        if (we.Alert != null)
+                        {
 
-
-
-
+                            foreach (var al in we.Alert)
+                            {
+                                var alert = new Alert();
+                                alert.Wheel = wheel;
+                                alert.MeasurementType = al.MeasurementType;
+                                alert.AlarmCode = al.AlarmCode;
+                                alert.AlarmLevel = al.Level;
+                                alert.DecriptionText = al.DecriptionText;
+                                _detectorDamageReportContext.Alert.Add(alert);
+                            }
+                        }
 
 
                         foreach (var measurementValues in we.MeasurementValues)
                         {
+                            var mv = new MeasurementValue();
+                            mv.SoftwareVersion = measurementValues.SoftwareVersion;
+                            mv.HardwareVersion = measurementValues.HardwareVersion;
+                            mv.Vendor = measurementValues.Vendor;
+                            mv.DeviceType = _detectorDamageReportContext.DeviceType.Where(o => o.Name == measurementValues.DeviceType).FirstOrDefault();
+                            mv.Wheel = wheel;
                             if (measurementValues.DeviceType == "HOTBOXHOTWHEEL")
                             {
                                 var hotBoxHotWheelMeasureWheelData = new HotBoxHotWheelMeasureWheelData();
@@ -174,25 +243,36 @@ namespace DetectorDamageReport.Models.DataManager
                                 hotBoxHotWheelMeasureWheelData.HotBoxRightValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotBoxRightValue);
                                 hotBoxHotWheelMeasureWheelData.HotWheelLeftValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotWheelLeftValue);
                                 hotBoxHotWheelMeasureWheelData.HotWheelRightValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotWheelRightValue);
-                                hotBoxHotWheelMeasureWheelData.Wheel = wheel;
+                                hotBoxHotWheelMeasureWheelData.MeasurementValue = mv;
                                 _detectorDamageReportContext.HotBoxHotWheelMeasureWheelData.Add(hotBoxHotWheelMeasureWheelData);
-
                             }
+                            else if (measurementValues.DeviceType == "WHEELDAMAGE")
+                            {
+                                var wheelDamageMeasureDataWheel = new WheelDamageMeasureDataWheel();
+                                wheelDamageMeasureDataWheel.LeftWheelDamageDistributedLoadValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageDistributedLoadValue;
+                                wheelDamageMeasureDataWheel.LeftWheelDamageMeanValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageMeanValue;
+                                wheelDamageMeasureDataWheel.LeftWheelDamagePeakValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamagePeakValue;
+                                wheelDamageMeasureDataWheel.LeftWheelDamageQualityFactor = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageQualityFactor;
+
+                                wheelDamageMeasureDataWheel.RightWheelDamageDistributedLoadValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageDistributedLoadValue;
+                                wheelDamageMeasureDataWheel.RightWheelDamageMeanValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageMeanValue;
+                                wheelDamageMeasureDataWheel.RightWheelDamagePeakValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamagePeakValue;
+                                wheelDamageMeasureDataWheel.RightWheelDamageQualityFactor = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageQualityFactor;
+                                wheelDamageMeasureDataWheel.MeasurementValue = mv;
+                                _detectorDamageReportContext.WheelDamageMeasureDataWheel.Add(wheelDamageMeasureDataWheel);
+                            }
+                            _detectorDamageReportContext.MeasurementValue.Add(mv);
+
                         }
-                        axle.Wheel.Add(wheel);
 
 
+
+                        //axle.Wheel.Add(wheel);
                     }
-
-
-                    vehicle.Axle.Add(axle);
-
+                    //vehicle.Axle.Add(axle);
                 }
-
             }
-
             _detectorDamageReportContext.SaveChanges();
         }
-
     }
 }

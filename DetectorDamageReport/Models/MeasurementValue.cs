@@ -14,13 +14,13 @@ namespace DetectorDamageReport.Models
         }
 
         public long MeasurementValueId { get; set; }
-        public long? WheelId { get; set; }
         public int DeviceTypeId { get; set; }
         public string SoftwareVersion { get; set; }
         public string HardwareVersion { get; set; }
         public string Vendor { get; set; }
-        public long? AxleId { get; set; }
         public long? VehicleId { get; set; }
+        public long? AxleId { get; set; }
+        public long? WheelId { get; set; }
 
         public virtual Axle Axle { get; set; }
         public virtual DeviceType DeviceType { get; set; }
