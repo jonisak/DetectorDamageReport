@@ -29,9 +29,6 @@ namespace DetectorDamageReport.Models.DataManager
             //}
             //_detectorDamageReportContext.SaveChanges();
 
-
-
-
             var message = new Message();
             message.MessageId = Convert.ToInt64(detectorDataMessage.Header.MessageID);
             message.Vendor = detectorDataMessage.Header.Vendor;
@@ -42,6 +39,9 @@ namespace DetectorDamageReport.Models.DataManager
             message.Owner = detectorDataMessage.Location.Owner;
             message.Track = detectorDataMessage.Location.Track;
             message.ImportedTimeStamp = DateTime.Now;
+
+
+
             _detectorDamageReportContext.Message.Add(message);
 
             var train = new Train();
@@ -166,8 +166,6 @@ namespace DetectorDamageReport.Models.DataManager
                     _detectorDamageReportContext.Axle.Add(axle);
                     axle.AxleNumber = Convert.ToInt32(ax.AxleNumber);
 
-
-
                     if (ax.Alert != null)
                     {
 
@@ -274,5 +272,7 @@ namespace DetectorDamageReport.Models.DataManager
             }
             _detectorDamageReportContext.SaveChanges();
         }
+
+ 
     }
 }

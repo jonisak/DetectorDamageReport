@@ -23,6 +23,7 @@ namespace DetectorDamageReport.Models
         public virtual DbSet<Message> Message { get; set; }
         public virtual DbSet<Train> Train { get; set; }
         public virtual DbSet<TrainOperator> TrainOperator { get; set; }
+        public virtual DbSet<TrainOperatorUser> TrainOperatorUser { get; set; }
         public virtual DbSet<Traindirection> Traindirection { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Vehicle> Vehicle { get; set; }
@@ -37,6 +38,7 @@ namespace DetectorDamageReport.Models
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Server=.;Database=DetectorDamageReport;ConnectRetryCount=0;User Id=DetectorDamageReport;Password=JanBanan76!");
+                optionsBuilder.UseLazyLoadingProxies(true);
             }
         }
 
@@ -197,6 +199,7 @@ namespace DetectorDamageReport.Models
                 entity.HasOne(d => d.TrainOperator)
                     .WithMany(p => p.Train)
                     .HasForeignKey(d => d.TrainOperatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Train_TrainOperator");
             });
 
@@ -207,6 +210,25 @@ namespace DetectorDamageReport.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<TrainOperatorUser>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.TrainOperatorId });
+
+                entity.Property(e => e.UserId).ValueGeneratedOnAdd();
+
+                entity.HasOne(d => d.TrainOperator)
+                    .WithMany(p => p.TrainOperatorUser)
+                    .HasForeignKey(d => d.TrainOperatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TrainOperatorUser_TrainOperator");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.TrainOperatorUser)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TrainOperatorUser_User");
             });
 
             modelBuilder.Entity<Traindirection>(entity =>
@@ -220,6 +242,8 @@ namespace DetectorDamageReport.Models
 
             modelBuilder.Entity<User>(entity =>
             {
+                entity.Property(e => e.UserId).ValueGeneratedNever();
+
                 entity.Property(e => e.Password)
                     .IsRequired()
                     .HasMaxLength(255);

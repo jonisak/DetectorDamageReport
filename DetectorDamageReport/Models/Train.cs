@@ -13,7 +13,7 @@ namespace DetectorDamageReport.Models
 
         public long TrainId { get; set; }
         public long MessageId { get; set; }
-        public int? TrainOperatorId { get; set; }
+        public int TrainOperatorId { get; set; }
         public string TrainNumber { get; set; }
         public int TrainDirectionId { get; set; }
         public int? VehicleCount { get; set; }

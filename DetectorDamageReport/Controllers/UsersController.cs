@@ -98,6 +98,9 @@ namespace DetectorDamageReport.Controllers
             _dataRepository.Delete(user);
             return NoContent();
         }
+
+
+
     }
 
 }

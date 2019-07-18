@@ -18,6 +18,8 @@ using DetectorDamageReport.Models.Repository;
 using DetectorDamageReport.Models.DataManager;
 using Microsoft.AspNetCore.Authentication;
 using DetectorDamageReport.Helpers;
+using Microsoft.EntityFrameworkCore.Proxies;
+using Newtonsoft.Json.Serialization;
 
 namespace DetectorDamageReport
 {
@@ -31,18 +33,36 @@ namespace DetectorDamageReport
 
 
 
+
+
+
+
+
+
+
+
+
+
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DetectorDamageReportContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddEntityFrameworkProxies();
+
+            services.AddDbContext<DetectorDamageReportContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseLazyLoadingProxies(true);
+
+            });
+
             services.AddScoped<IDataRepository<User>, UserManager>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddMvcCore().AddJsonFormatters().AddXmlSerializerFormatters();
             //AppContext.SetSwitch("Switch.System.Xml.AllowDefaultResolver", true);
-
-            //services.AddMvcCore().AddJsonFormatters().AddXmlFormaterExtensions();
+            services.AddMvcCore().AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
             services.Configure<CookiePolicyOptions>(options =>
             {

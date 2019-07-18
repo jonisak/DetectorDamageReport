@@ -31,19 +31,8 @@ namespace DetectorDamageReport.Controllers
             {
                 return BadRequest("DetectorDataMessage is null.");
             }
-
-           new DetectorDataMessageManager().Add(detectorDataMessage);
-
-
-
+            new DetectorDataMessageManager().Add(detectorDataMessage);
             return null;
-
-
-            ////_dataRepository.Add(user);
-            //return CreatedAtRoute(
-            //      "Get",
-            //      new { Id = user.UserId },
-            //      user);
         }
 
         //[HttpGet("{id}", Name = "Get")]
