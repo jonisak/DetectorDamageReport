@@ -14,7 +14,10 @@ namespace DetectorDamageReport.DTO
         public string TrainDirection { get; set; }
         public int VehicleCount { get; set; }
 
-       // public List<VehicleDTO> Vehicles { get; set; }
+        public string MessageSent { get; set; }
+        public string Detector { get; set; }
+
+         public List<VehicleDTO> Vehicles { get; set; }
 
 
 

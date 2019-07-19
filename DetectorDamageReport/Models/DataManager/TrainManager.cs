@@ -24,10 +24,6 @@ namespace DetectorDamageReport.Models.DataManager
 
             //Ta fram en lista med användarens alla tågoperatörer
             var trainoperators = _detectorDamageReportContext.TrainOperatorUser.Where(o => o.User.UserName == userId).Select(o => o.TrainOperatorId).Distinct().ToList();
-            //Hämta alla tåg för den tågoperatören
-            //var trains = _detectorDamageReportContext.Train.Where(o => o.TrainOperator == trainoperators).ToList();// .Any(o => o.TrainOperator == trainoperators);
-            //var trains = _detectorDamageReportContext.Train.Any(o => o.TrainOperator == trainoperators);
-            
 
             var trains = _detectorDamageReportContext.Train
                                .Where(t => trainoperators.Contains(t.TrainOperatorId));
@@ -38,12 +34,25 @@ namespace DetectorDamageReport.Models.DataManager
 
             foreach (var train in trains)
             {
+
+                foreach (var vechicle in train.Vehicle)
+                {
+
+                }
+
                 trainDTOs.Add(new TrainDTO()
                 {
                     TrainId = train.TrainId,
                     TrainDirection = train.TrainDirection.Name,
                     TrainNumber = train.TrainNumber,
-                    TrainOperator = train.TrainOperator.Name
+                    TrainOperator = train.TrainOperator.Name,
+                    MessageSent = train.Message.SendTimeStamp.ToShortDateString(),
+                    Detector = train.Message.LocationId
+
+
+
+
+
                 });
                
             }
