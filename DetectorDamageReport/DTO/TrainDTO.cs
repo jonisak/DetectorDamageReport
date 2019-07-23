@@ -19,6 +19,7 @@ namespace DetectorDamageReport.DTO
 
          public List<VehicleDTO> Vehicles { get; set; }
 
+        public List<AlertDTO> AlertList { get; set; }
 
 
     }

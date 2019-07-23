@@ -7,9 +7,9 @@ namespace DetectorDamageReport.Models
     {
         public long WheelDamageMeasureDataVehicleId { get; set; }
         public long MeasurementValueId { get; set; }
-        public double FrontRearLoadRatio { get; set; }
-        public double LeftRightLoadRatio { get; set; }
-        public double WeightInTons { get; set; }
+        public float FrontRearLoadRatio { get; set; }
+        public float LeftRightLoadRatio { get; set; }
+        public float WeightInTons { get; set; }
 
         public virtual MeasurementValue MeasurementValue { get; set; }
     }

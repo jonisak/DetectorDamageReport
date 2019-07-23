@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DetectorDamageReport.Models
+﻿namespace DetectorDamageReport.DTO
 {
-    public partial class WheelDamageMeasureDataWheel
+    public class WheelDamageMeasureDataWheelDTO
     {
-        public long WheelDamageMeasureDataWheelId { get; set; }
+        public double WheelDamageMeasureDataWheelId { get; set; }
         public float? LeftWheelDamageDistributedLoadValue { get; set; }
         public float? LeftWheelDamageMeanValue { get; set; }
         public float? LeftWheelDamagePeakValue { get; set; }
@@ -14,8 +11,5 @@ namespace DetectorDamageReport.Models
         public float? RightWheelDamageMeanValue { get; set; }
         public float? RightWheelDamagePeakValue { get; set; }
         public float? RightWheelDamageQualityFactor { get; set; }
-        public long MeasurementValueId { get; set; }
-
-        public virtual MeasurementValue MeasurementValue { get; set; }
     }
 }

@@ -11,9 +11,18 @@ namespace DetectorDamageReport.DTO
         public long VehicleId { get; set; }
         public string VehicleNumber { get; set; }
 
-        public long Speed { get; set; }
+        public int Speed { get; set; }
 
         public int AxleCount { get; set; }
+
+        public List<AxleDTO> AxleList { get; set; }
+
+        public List<WheelDamageMeasureDataVehicleDTO> WheelDamageMeasureDataVehicleList { get; set; }
+
+
+
+        public List<AlertDTO> AlertList { get; set; }
+
 
 
     }
