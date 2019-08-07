@@ -32,7 +32,7 @@ namespace DetectorDamageReport.Controllers
                 return BadRequest("DetectorDataMessage is null.");
             }
             new DetectorDataMessageManager().Add(detectorDataMessage);
-            return null;
+            return Ok();
         }
 
         //[HttpGet("{id}", Name = "Get")]

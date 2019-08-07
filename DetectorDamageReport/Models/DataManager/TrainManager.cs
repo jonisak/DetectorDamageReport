@@ -26,7 +26,7 @@ namespace DetectorDamageReport.Models.DataManager
             var trainoperators = _detectorDamageReportContext.TrainOperatorUser.Where(o => o.User.UserName == userId).Select(o => o.TrainOperatorId).Distinct().ToList();
 
             var trains = _detectorDamageReportContext.Train
-                               .Where(t => trainoperators.Contains(t.TrainOperatorId));
+                               .Where(t => trainoperators.Contains(t.TrainOperatorId)).Take(4);
 
 
 

@@ -3,7 +3,7 @@
     public class WheelDamageMeasureDataAxleDTO
     {
         public double WheelDamageMeasureDataAxleId { get; set; }
-        public float? AxleLoad { get; set; }
-        public float? LeftRightLoadRatio { get; set; }
+        public double? AxleLoad { get; set; }
+        public double? LeftRightLoadRatio { get; set; }
     }
 }

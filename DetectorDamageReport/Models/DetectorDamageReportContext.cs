@@ -38,6 +38,7 @@ namespace DetectorDamageReport.Models
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Server=.;Database=DetectorDamageReport;ConnectRetryCount=0;User Id=DetectorDamageReport;Password=JanBanan76!");
+                optionsBuilder.UseLazyLoadingProxies(true);
             }
         }
 
@@ -272,8 +273,6 @@ namespace DetectorDamageReport.Models
 
             modelBuilder.Entity<WheelDamageMeasureDataAxle>(entity =>
             {
-                entity.Property(e => e.WheelDamageMeasureDataAxleId).ValueGeneratedNever();
-
                 entity.HasOne(d => d.MeasurementValue)
                     .WithMany(p => p.WheelDamageMeasureDataAxle)
                     .HasForeignKey(d => d.MeasurementValueId)

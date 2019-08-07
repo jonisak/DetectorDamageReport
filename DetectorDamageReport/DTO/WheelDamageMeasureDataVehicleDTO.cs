@@ -9,9 +9,9 @@ namespace DetectorDamageReport.DTO
     {
         public double WheelDamageMeasureDataVehicleId { get; set; }
 
-        public float FrontRearLoadRatio { get; set; }
-        public float LeftRightLoadRatio { get; set; }
+        public double FrontRearLoadRatio { get; set; }
+        public double LeftRightLoadRatio { get; set; }
 
-        public float WeightInTons { get; set; }
+        public double WeightInTons { get; set; }
     }
 }

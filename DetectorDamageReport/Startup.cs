@@ -55,7 +55,7 @@ namespace DetectorDamageReport
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 options.UseLazyLoadingProxies(true);
-
+                options.EnableSensitiveDataLogging(true);
             });
 
             services.AddScoped<IDataRepository<User>, UserManager>();

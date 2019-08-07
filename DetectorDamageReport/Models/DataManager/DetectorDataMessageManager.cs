@@ -237,25 +237,67 @@ namespace DetectorDamageReport.Models.DataManager
                             if (measurementValues.DeviceType == "HOTBOXHOTWHEEL")
                             {
                                 var hotBoxHotWheelMeasureWheelData = new HotBoxHotWheelMeasureWheelData();
-                                hotBoxHotWheelMeasureWheelData.HotBoxLeftValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotBoxLeftValue);
-                                hotBoxHotWheelMeasureWheelData.HotBoxRightValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotBoxRightValue);
-                                hotBoxHotWheelMeasureWheelData.HotWheelLeftValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotWheelLeftValue);
-                                hotBoxHotWheelMeasureWheelData.HotWheelRightValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotWheelRightValue);
+                                if (measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotBoxLeftValueSpecified)
+                                {
+                                    hotBoxHotWheelMeasureWheelData.HotBoxLeftValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotBoxLeftValue);
+                                }
+
+                                if (measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotBoxRightValueSpecified)
+                                {
+                                    hotBoxHotWheelMeasureWheelData.HotBoxRightValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotBoxRightValue);
+                                }
+
+                                if (measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotWheelLeftValueSpecified)
+                                {
+                                    hotBoxHotWheelMeasureWheelData.HotWheelLeftValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotWheelLeftValue);
+                                }
+                                if (measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotWheelRightValueSpecified)
+                                {
+                                    hotBoxHotWheelMeasureWheelData.HotWheelRightValue = Convert.ToInt32(measurementValues.MeasurementData.HotBoxHotWheelMeasureWheelData.HotWheelRightValue);
+                                }
+
                                 hotBoxHotWheelMeasureWheelData.MeasurementValue = mv;
                                 _detectorDamageReportContext.HotBoxHotWheelMeasureWheelData.Add(hotBoxHotWheelMeasureWheelData);
                             }
                             else if (measurementValues.DeviceType == "WHEELDAMAGE")
                             {
                                 var wheelDamageMeasureDataWheel = new WheelDamageMeasureDataWheel();
-                                wheelDamageMeasureDataWheel.LeftWheelDamageDistributedLoadValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageDistributedLoadValue;
-                                wheelDamageMeasureDataWheel.LeftWheelDamageMeanValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageMeanValue;
-                                wheelDamageMeasureDataWheel.LeftWheelDamagePeakValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamagePeakValue;
-                                wheelDamageMeasureDataWheel.LeftWheelDamageQualityFactor = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageQualityFactor;
 
-                                wheelDamageMeasureDataWheel.RightWheelDamageDistributedLoadValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageDistributedLoadValue;
-                                wheelDamageMeasureDataWheel.RightWheelDamageMeanValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageMeanValue;
-                                wheelDamageMeasureDataWheel.RightWheelDamagePeakValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamagePeakValue;
-                                wheelDamageMeasureDataWheel.RightWheelDamageQualityFactor = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageQualityFactor;
+                                if (measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageDistributedLoadValueSpecified)
+                                {
+                                    wheelDamageMeasureDataWheel.LeftWheelDamageDistributedLoadValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageDistributedLoadValue;
+                                }
+                                if (measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageMeanValueSpecified)
+                                {
+                                    wheelDamageMeasureDataWheel.LeftWheelDamageMeanValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageMeanValue;
+                                }
+
+                                if (measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamagePeakValueSpecified)
+                                {
+                                    wheelDamageMeasureDataWheel.LeftWheelDamagePeakValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamagePeakValue;
+                                }
+
+                                if (measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageQualityFactorSpecified)
+                                {
+                                    wheelDamageMeasureDataWheel.LeftWheelDamageQualityFactor = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.LeftWheelDamageQualityFactor;
+                                }
+
+                                if (measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageDistributedLoadValueSpecified)
+                                {
+                                    wheelDamageMeasureDataWheel.RightWheelDamageDistributedLoadValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageDistributedLoadValue;
+                                }
+                                if (measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageMeanValueSpecified)
+                                {
+                                    wheelDamageMeasureDataWheel.RightWheelDamageMeanValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageMeanValue;
+                                }
+                                if (measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamagePeakValueSpecified)
+                                {
+                                    wheelDamageMeasureDataWheel.RightWheelDamagePeakValue = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamagePeakValue;
+                                }
+                                if (measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageQualityFactorSpecified)
+                                {
+                                    wheelDamageMeasureDataWheel.RightWheelDamageQualityFactor = measurementValues.MeasurementData.WheelDamageMeasureDataWheel.RightWheelDamageQualityFactor;
+                                }
                                 wheelDamageMeasureDataWheel.MeasurementValue = mv;
                                 _detectorDamageReportContext.WheelDamageMeasureDataWheel.Add(wheelDamageMeasureDataWheel);
                             }
@@ -273,6 +315,6 @@ namespace DetectorDamageReport.Models.DataManager
             _detectorDamageReportContext.SaveChanges();
         }
 
- 
+
     }
 }
