@@ -17,10 +17,10 @@ namespace DetectorDamageReport.Controllers
     public class TrainController : ControllerBase
     {
         // GET: api/Employee
-        [HttpGet]
-        public ActionResult<List<TrainDTO>> GetUserTrains()
+        [HttpPost]
+        public ActionResult<List<TrainDTO>> GetUserTrains([FromBody] PagingDTO pagingDTO)
         {
-            return new TrainManager().GetUserTrains(User.Identity.Name);
+            return new TrainManager().GetUserTrains(User.Identity.Name, pagingDTO);
         }
     }
 }

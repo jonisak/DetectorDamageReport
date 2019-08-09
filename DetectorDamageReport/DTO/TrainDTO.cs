@@ -7,6 +7,7 @@ namespace DetectorDamageReport.DTO
 {
     public class TrainDTO
     {
+        public int? TotalCount { get; set; }
 
         public double TrainId { get; set; }
         public string TrainOperator { get; set; }

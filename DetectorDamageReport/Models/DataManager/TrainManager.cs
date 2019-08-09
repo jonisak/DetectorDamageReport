@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DetectorDamageReport.DTO;
-
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 namespace DetectorDamageReport.Models.DataManager
 {
     public class TrainManager
@@ -18,20 +19,64 @@ namespace DetectorDamageReport.Models.DataManager
             _detectorDamageReportContext = new DetectorDamageReportContext();
         }
 
-        public List<TrainDTO> GetUserTrains(String userId)
+        public List<TrainDTO> GetUserTrains(String userId, PagingDTO pagingDTO)
         {
-            // int uid = Convert.ToInt32(userId);
+
+            int? totalCount = null;
+            int skipRows = 0;
+            int take = 10;
+
 
             //Ta fram en lista med användarens alla tågoperatörer
-            var trainoperators = _detectorDamageReportContext.TrainOperatorUser.Where(o => o.User.UserName == userId).Select(o => o.TrainOperatorId).Distinct().ToList();
+            // var trainoperators = _detectorDamageReportContext.TrainOperatorUser.Where(o => o.User.UserName == userId).Select(o => o.TrainOperatorId).Distinct().ToList();
 
-            var trains = _detectorDamageReportContext.Train
-                               .Where(t => trainoperators.Contains(t.TrainOperatorId)).Take(4);
+            var query = _detectorDamageReportContext.Train
+                .Include(x => x.Alert)
+                .Include(x=>x.Vehicle).ThenInclude(x=>x.Alert)
+                .Include(x => x.Message)
+                .Include(o=>o.Vehicle).ThenInclude(o => o.MeasurementValue).ThenInclude(o => o.WheelDamageMeasureDataVehicle)
+                .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o => o.MeasurementValue).ThenInclude(o => o.WheelDamageMeasureDataAxle)
+                .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o=>o.Alert)
+                .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o => o.Wheel).ThenInclude(o => o.MeasurementValue).ThenInclude(o => o.WheelDamageMeasureDataWheel)
+                .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o => o.Wheel).ThenInclude(o => o.MeasurementValue).ThenInclude(o => o.HotBoxHotWheelMeasureWheelData)
+                .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o => o.Wheel).ThenInclude(o=>o.Alert)
+                .Include(x => x.TrainDirection)
+                .Include(x => x.TrainOperator).AsQueryable();
 
 
 
+
+            //query = query.Where(t => trainoperators.Contains(t.TrainOperatorId));
+
+            if (pagingDTO.Page.HasValue && pagingDTO.PageSize.HasValue)
+            {
+                skipRows = (pagingDTO.Page.Value - 1) * pagingDTO.PageSize.Value;
+                take = pagingDTO.PageSize.Value;
+                if (pagingDTO.Page == 1)
+                {
+                    int count = query.Count();
+                    if (count > 10000)
+                    {
+                        totalCount = 10000;
+                    }
+                    else
+                    {
+                        totalCount = query.Count();
+                    }
+                }
+            }
+
+
+
+
+            // var trains = _detectorDamageReportContext.Train
+            //                    .Where(t => trainoperators.Contains(t.TrainOperatorId)).Take(8);
+
+            var trains = query.Skip(skipRows).Take(take).ToList();
+
+            //Lista med tågset
             List<TrainDTO> trainDTOs = new List<TrainDTO>();
-
+            //För varje tåg i tågsettet
             foreach (var train in trains)
             {
                 #region Larm tågnivå
@@ -52,11 +97,13 @@ namespace DetectorDamageReport.Models.DataManager
                     }
                 }
                 #endregion
-
+                //Skapa en lista med fordon
                 var vehicleDTOList = new List<VehicleDTO>();
+                //Loopa igenom varje fordon i tågsettet
                 foreach (var vechicle in train.Vehicle)
                 {
                     #region larm Fordon
+                    //Kontrollera om det finns något larm för fordonet. Finns larm så lägg det till fordonslarmslistan
                     var alertListVehicleDTO = new List<AlertDTO>();
                     if (vechicle.Alert != null && vechicle.Alert.Count() > 0)
                     {
@@ -74,15 +121,20 @@ namespace DetectorDamageReport.Models.DataManager
                         }
                     }
                     #endregion
+                    //Skapa en lista med Axlar
                     var axleListDTO = new List<AxleDTO>();
+                    //Loopa igenom alla axlar i fordonet
                     foreach (var axle in vechicle.Axle)
                     {
                         #region larm Axel
                         var axleAlertList = new List<AlertDTO>();
                         if (axle.Alert != null && axle.Alert.Count > 0)
                         {
+
+                            //Loopa igenom alla larm för en axel
                             foreach (var alertAxle in axle.Alert)
                             {
+                                //Om det finns larm, lägg det till en larmlista
                                 axleAlertList.Add(new AlertDTO()
                                 {
                                     AlarmCode = alertAxle.AlarmCode,
@@ -96,9 +148,11 @@ namespace DetectorDamageReport.Models.DataManager
                         }
                         #endregion
                         var wheelList = new List<WheelDTO>();
+                        //För varje hjul på axeln
                         foreach (var wheel in axle.Wheel)
                         {
                             #region larm Hjul
+                            //Skapa en larmlista för varje hjul
                             var alertListWheel = new List<AlertDTO>();
                             if (wheel.Alert != null && wheel.Alert.Count > 0)
                             {
@@ -117,11 +171,14 @@ namespace DetectorDamageReport.Models.DataManager
                             #endregion
                             var hotBoxHotWheelMeasureWheelDataList = new List<HotBoxHotWheelMeasureWheelDataDTO>();
                             var wheelDamageMeasureDataWheelList = new List<WheelDamageMeasureDataWheelDTO>();
+
+                            //Om hjulet har ett mätvärde 
                             if (wheel.MeasurementValue != null && wheel.MeasurementValue.Count > 0)
                             {
+                                //Loopa igenom hjulets mätvärde
                                 foreach (var measurementValue in wheel.MeasurementValue)
                                 {
-                                    #region Hot Box/Hot Wheel
+                                    #region Hot Box/Hot Wheel på hjul
                                     if (measurementValue.HotBoxHotWheelMeasureWheelData != null && measurementValue.HotBoxHotWheelMeasureWheelData.Count() > 0)
                                     {
                                         foreach (var hotBoxHotWheelMeasureWheelData in measurementValue.HotBoxHotWheelMeasureWheelData)
@@ -137,7 +194,7 @@ namespace DetectorDamageReport.Models.DataManager
                                         }
                                     }
                                     #endregion
-                                    #region Wheel Damage
+                                    #region Wheel Damage mätdata på hjul
                                     if (measurementValue.WheelDamageMeasureDataWheel != null && measurementValue.WheelDamageMeasureDataWheel.Count() > 0)
                                     {
                                         foreach (var wheelDamageMeasureDataWheel in measurementValue.WheelDamageMeasureDataWheel)
@@ -249,7 +306,8 @@ namespace DetectorDamageReport.Models.DataManager
                     Detector = train.Message.LocationId,
                     Vehicles = vehicleDTOList,
                     VehicleCount = train.VehicleCount.HasValue ? train.VehicleCount.Value : 0,
-                    AlertList = alertListDTOTrain
+                    AlertList = alertListDTOTrain,
+                    TotalCount = totalCount ?? null
                 });
 
             }
