@@ -18,9 +18,9 @@ namespace DetectorDamageReport.Controllers
     {
         // GET: api/Employee
         [HttpPost]
-        public ActionResult<List<TrainDTO>> GetUserTrains([FromBody] PagingDTO pagingDTO)
+        public ActionResult<List<TrainDTO>> GetUserTrains([FromBody] TrainFilterDTO trainFilterDTO)
         {
-            return new TrainManager().GetUserTrains(User.Identity.Name, pagingDTO);
+            return new TrainManager().GetUserTrains(User.Identity.Name, trainFilterDTO);
         }
     }
 }

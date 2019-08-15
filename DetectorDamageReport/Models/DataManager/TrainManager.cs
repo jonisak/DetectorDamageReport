@@ -19,7 +19,7 @@ namespace DetectorDamageReport.Models.DataManager
             _detectorDamageReportContext = new DetectorDamageReportContext();
         }
 
-        public List<TrainDTO> GetUserTrains(String userId, PagingDTO pagingDTO)
+        public List<TrainDTO> GetUserTrains(String userId, TrainFilterDTO trainFilterDTO)
         {
 
             int? totalCount = null;
@@ -32,27 +32,53 @@ namespace DetectorDamageReport.Models.DataManager
 
             var query = _detectorDamageReportContext.Train
                 .Include(x => x.Alert)
-                .Include(x=>x.Vehicle).ThenInclude(x=>x.Alert)
+                .Include(x => x.Vehicle).ThenInclude(x => x.Alert)
                 .Include(x => x.Message)
-                .Include(o=>o.Vehicle).ThenInclude(o => o.MeasurementValue).ThenInclude(o => o.WheelDamageMeasureDataVehicle)
+                .Include(o => o.Vehicle).ThenInclude(o => o.MeasurementValue).ThenInclude(o => o.WheelDamageMeasureDataVehicle)
                 .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o => o.MeasurementValue).ThenInclude(o => o.WheelDamageMeasureDataAxle)
-                .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o=>o.Alert)
+                .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o => o.Alert)
                 .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o => o.Wheel).ThenInclude(o => o.MeasurementValue).ThenInclude(o => o.WheelDamageMeasureDataWheel)
                 .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o => o.Wheel).ThenInclude(o => o.MeasurementValue).ThenInclude(o => o.HotBoxHotWheelMeasureWheelData)
-                .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o => o.Wheel).ThenInclude(o=>o.Alert)
+                .Include(o => o.Vehicle).ThenInclude(o => o.Axle).ThenInclude(o => o.Wheel).ThenInclude(o => o.Alert)
                 .Include(x => x.TrainDirection)
                 .Include(x => x.TrainOperator).AsQueryable();
+
+            //query = query.Where(o => o.Vehicle.Any(c => c.Axle.Any(u => u.Wheel.Any(y => y.Alert.Count > 0))));
+
+            
+            if (trainFilterDTO.ShowTrainWithAlarmOnly)
+            {
+                query = query.Where(
+                o => o.Alert.Count() > 0 ||
+                o.Vehicle.Any(x => x.Alert.Count() > 0) ||
+                o.Vehicle.Any(z => z.Alert.Count() > 0) ||
+                o.Vehicle.Where(c => c.Axle.Any(u => u.Wheel.Any(y => y.Alert.Count > 0))).Count()>0
+                );
+            }
+
+
+            foreach (var deviceTypeDTO in trainFilterDTO.DeviceTypeDTOList)
+            {
+
+                if (deviceTypeDTO.Selected == true)
+                {
+                    //query = query.Any(o => o.Vehicle.Any(z => z.MeasurementValue.Where(d => d.DeviceType.Name == deviceTypeDTO.DeviceType)));
+                    query = query.Where(c => c.Vehicle.Any(u => u.MeasurementValue.Any(r => r.DeviceType.Name == deviceTypeDTO.DeviceType)));
+                }
+
+
+            }
 
 
 
 
             //query = query.Where(t => trainoperators.Contains(t.TrainOperatorId));
 
-            if (pagingDTO.Page.HasValue && pagingDTO.PageSize.HasValue)
+            if (trainFilterDTO.Page.HasValue && trainFilterDTO.PageSize.HasValue)
             {
-                skipRows = (pagingDTO.Page.Value - 1) * pagingDTO.PageSize.Value;
-                take = pagingDTO.PageSize.Value;
-                if (pagingDTO.Page == 1)
+                skipRows = (trainFilterDTO.Page.Value - 1) * trainFilterDTO.PageSize.Value;
+                take = trainFilterDTO.PageSize.Value;
+                if (trainFilterDTO.Page == 1)
                 {
                     int count = query.Count();
                     if (count > 10000)
@@ -66,11 +92,6 @@ namespace DetectorDamageReport.Models.DataManager
                 }
             }
 
-
-
-
-            // var trains = _detectorDamageReportContext.Train
-            //                    .Where(t => trainoperators.Contains(t.TrainOperatorId)).Take(8);
 
             var trains = query.Skip(skipRows).Take(take).ToList();
 
