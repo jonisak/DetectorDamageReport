@@ -54,7 +54,7 @@ namespace DetectorDamageReport
             services.AddDbContext<DetectorDamageReportContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-                options.UseLazyLoadingProxies(true);
+                options.UseLazyLoadingProxies(false);
                 options.EnableSensitiveDataLogging(true);
             });
 

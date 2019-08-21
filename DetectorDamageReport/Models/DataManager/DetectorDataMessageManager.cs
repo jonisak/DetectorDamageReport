@@ -91,6 +91,8 @@ namespace DetectorDamageReport.Models.DataManager
                     alert.AlarmLevel = al.Level;
                     alert.DecriptionText = al.DecriptionText;
                     _detectorDamageReportContext.Alert.Add(alert);
+                    train.TrainHasAlarms = true;
+
                 }
             }
             #endregion
@@ -118,6 +120,8 @@ namespace DetectorDamageReport.Models.DataManager
                         alert.AlarmLevel = al.Level;
                         alert.DecriptionText = al.DecriptionText;
                         _detectorDamageReportContext.Alert.Add(alert);
+                        train.TrainHasAlarms = true;
+
                     }
                 }
 
@@ -136,21 +140,20 @@ namespace DetectorDamageReport.Models.DataManager
                         mv.SoftwareVersion = vme.SoftwareVersion;
                         mv.HardwareVersion = vme.HardwareVersion;
                         mv.Vendor = vme.Vendor;
+                        _detectorDamageReportContext.MeasurementValue.Add(mv);
 
                         if (vme.DeviceType == "WHEELDAMAGE")
                         {
-                            _detectorDamageReportContext.MeasurementValue.Add(mv);
                             if (vme.MeasurementData.WheelDamageMeasureDataVehicle != null)
                             {
-                                foreach (var md in mv.WheelDamageMeasureDataVehicle)
-                                {
-                                    var wheelDamageMeasureDataVehicle = new WheelDamageMeasureDataVehicle();
-                                    wheelDamageMeasureDataVehicle.MeasurementValue = mv;
-                                    wheelDamageMeasureDataVehicle.FrontRearLoadRatio = md.FrontRearLoadRatio;
-                                    wheelDamageMeasureDataVehicle.LeftRightLoadRatio = md.LeftRightLoadRatio;
-                                    wheelDamageMeasureDataVehicle.WeightInTons = md.WeightInTons;
-                                    _detectorDamageReportContext.WheelDamageMeasureDataVehicle.Add(wheelDamageMeasureDataVehicle);
-                                }
+
+                                var wheelDamageMeasureDataVehicle = new WheelDamageMeasureDataVehicle();
+                                wheelDamageMeasureDataVehicle.MeasurementValue = mv;
+                                wheelDamageMeasureDataVehicle.FrontRearLoadRatio = vme.MeasurementData.WheelDamageMeasureDataVehicle.FrontRearLoadRatio;
+                                wheelDamageMeasureDataVehicle.LeftRightLoadRatio = vme.MeasurementData.WheelDamageMeasureDataVehicle.LeftRightLoadRatio;
+                                wheelDamageMeasureDataVehicle.WeightInTons = vme.MeasurementData.WheelDamageMeasureDataVehicle.WeightInTons;
+                                _detectorDamageReportContext.WheelDamageMeasureDataVehicle.Add(wheelDamageMeasureDataVehicle);
+
                             }
                         }
                     }
@@ -178,6 +181,8 @@ namespace DetectorDamageReport.Models.DataManager
                             alert.AlarmLevel = al.Level;
                             alert.DecriptionText = al.DecriptionText;
                             _detectorDamageReportContext.Alert.Add(alert);
+                            train.TrainHasAlarms = true;
+
                         }
                     }
 
@@ -222,6 +227,8 @@ namespace DetectorDamageReport.Models.DataManager
                                 alert.AlarmLevel = al.Level;
                                 alert.DecriptionText = al.DecriptionText;
                                 _detectorDamageReportContext.Alert.Add(alert);
+                                train.TrainHasAlarms = true;
+
                             }
                         }
 

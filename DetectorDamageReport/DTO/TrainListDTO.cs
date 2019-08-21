@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace DetectorDamageReport.DTO
 {
-    public class TrainDTO
+    public class TrainListDTO
     {
+        public int? TotalCount { get; set; }
 
         public double TrainId { get; set; }
         public string TrainOperator { get; set; }
@@ -18,12 +19,7 @@ namespace DetectorDamageReport.DTO
         public string Detector { get; set; }
         public bool isWheelDamage { get; set; }
         public bool isHotBoxHotWheel { get; set; }
-
-        public List<VehicleDTO> Vehicles { get; set; }
-
-        public List<AlertDTO> AlertList { get; set; }
-
-
+        public bool TrainHasAlarmItem { get; set; }
 
     }
 }
