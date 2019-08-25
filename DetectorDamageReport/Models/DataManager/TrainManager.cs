@@ -40,10 +40,67 @@ namespace DetectorDamageReport.Models.DataManager
 
             if (trainFilterDTO.ShowTrainWithAlarmOnly)
             {
-
-
                 query = query.Where(o => o.TrainHasAlarms == true);
             }
+
+            if (trainFilterDTO.TrainNumber.Length > 0)
+            {
+                query = query.Where(o => o.TrainNumber == trainFilterDTO.TrainNumber);
+
+            }
+
+
+            if (trainFilterDTO.FromDate.Length > 0)
+            {
+                DateTime fromDateValue;
+
+                if (DateTime.TryParse(trainFilterDTO.FromDate, out fromDateValue))
+                {
+                    query = query.Where(o => o.Message.SendTimeStamp >= fromDateValue.Date);
+                }
+            }
+            if (trainFilterDTO.ToDate.Length > 0)
+            {
+                DateTime toDateValue;
+                if (DateTime.TryParse(trainFilterDTO.ToDate, out toDateValue))
+                {
+                   
+                    query = query.Where(o => o.Message.SendTimeStamp < toDateValue.Date.AddDays(1));
+                }
+            }
+
+            var IsHotBoxHotWheel = false;
+            var IsWheelDamage = false;
+            foreach (var deviceType in trainFilterDTO.DeviceTypeDTOList)
+            {
+                if (deviceType.DeviceType == "HOTBOXHOTWHEEL")
+                {
+                    if (deviceType.Selected)
+                    {
+                        IsHotBoxHotWheel = true;
+                    }
+                    else
+                    {
+                        IsHotBoxHotWheel = false;
+                    }
+                }
+
+                if (deviceType.DeviceType == "WHEELDAMAGE")
+                {
+                    if (deviceType.Selected)
+                    {
+                        IsWheelDamage = true;
+                    }
+                    else
+                    {
+                        IsWheelDamage = false;
+
+                    }
+                }
+            }
+
+            query = query.Where(entity => entity.IsHotBoxHotWheel == IsHotBoxHotWheel || entity.IsWheelDamage == IsWheelDamage);
+
 
 
             if (trainFilterDTO.Page.HasValue && trainFilterDTO.PageSize.HasValue)
@@ -72,8 +129,6 @@ namespace DetectorDamageReport.Models.DataManager
             //För varje tåg i tågsettet
             foreach (var train in trains)
             {
-                var isWheelDamage = false;
-                var isHotBoxHotWheel = false;
                 trainListDTOs.Add(new TrainListDTO()
                 {
                     TrainId = train.TrainId,
@@ -82,9 +137,11 @@ namespace DetectorDamageReport.Models.DataManager
                     TrainOperator = train.TrainOperator.Name,
                     MessageSent = train.Message.SendTimeStamp.ToShortDateString(),
                     Detector = train.Message.LocationId,
-                    isWheelDamage = isWheelDamage,
-                    isHotBoxHotWheel = isHotBoxHotWheel,
+                    isWheelDamage = train.IsWheelDamage,
+                    isHotBoxHotWheel = train.IsHotBoxHotWheel,
+                    TrainHasAlarmItem = train.TrainHasAlarms,
                     VehicleCount = train.VehicleCount.HasValue ? train.VehicleCount.Value : 0,
+
                     TotalCount = totalCount ?? null
                 });
 
@@ -352,7 +409,7 @@ namespace DetectorDamageReport.Models.DataManager
                 });
             }
 
-           var trainDTO = new TrainDTO()
+            var trainDTO = new TrainDTO()
             {
                 TrainId = train.TrainId,
                 TrainDirection = train.TrainDirection.Name,
@@ -365,6 +422,7 @@ namespace DetectorDamageReport.Models.DataManager
                 Vehicles = vehicleDTOList,
                 VehicleCount = train.VehicleCount.HasValue ? train.VehicleCount.Value : 0,
                 AlertList = alertListDTOTrain,
+
             };
             return trainDTO;
         }

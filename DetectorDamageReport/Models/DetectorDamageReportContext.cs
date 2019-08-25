@@ -182,6 +182,10 @@ namespace DetectorDamageReport.Models
 
             modelBuilder.Entity<Train>(entity =>
             {
+                entity.Property(e => e.IsHotBoxHotWheel).HasColumnName("isHotBoxHotWheel");
+
+                entity.Property(e => e.IsWheelDamage).HasColumnName("isWheelDamage");
+
                 entity.Property(e => e.TrainNumber).HasMaxLength(50);
 
                 entity.HasOne(d => d.Message)

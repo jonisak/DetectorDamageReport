@@ -18,17 +18,26 @@ namespace DetectorDamageReport.Controllers
     {
         // GET: api/Employee
         [HttpPost]
-        public ActionResult<List<TrainListDTO>> GetUserTrains([FromBody] TrainFilterDTO trainFilterDTO)
+        public ActionResult<List<TrainListDTO>> Get([FromBody] TrainFilterDTO trainFilterDTO)
         {
             return new TrainManager().GetUserTrainList(User.Identity.Name, trainFilterDTO);
         }
 
 
         // GET: api/Employee
-        [HttpGet]
-        public ActionResult<TrainDTO> GetUserTrain(int TrainId)
+        [HttpGet("{id}")]
+        public ActionResult<TrainDTO> Get(int id)
         {
-            return new TrainManager().GetUserTrain(User.Identity.Name, TrainId);
+            return new TrainManager().GetUserTrain(User.Identity.Name, id);
         }
+
+        // GET: api/Employee
+        [HttpGet("Login")]
+        public ActionResult Login()
+        {
+            return Ok();
+            //return NoContent();
+        }
+
     }
 }

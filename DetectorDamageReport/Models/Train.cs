@@ -18,6 +18,8 @@ namespace DetectorDamageReport.Models
         public int TrainDirectionId { get; set; }
         public int? VehicleCount { get; set; }
         public bool TrainHasAlarms { get; set; }
+        public bool IsWheelDamage { get; set; }
+        public bool IsHotBoxHotWheel { get; set; }
 
         public virtual Message Message { get; set; }
         public virtual Traindirection TrainDirection { get; set; }

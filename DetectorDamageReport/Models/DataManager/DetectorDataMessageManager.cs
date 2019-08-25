@@ -28,6 +28,11 @@ namespace DetectorDamageReport.Models.DataManager
             //    _detectorDamageReportContext.Message.Remove(item);
             //}
             //_detectorDamageReportContext.SaveChanges();
+            long mID = Convert.ToInt64(detectorDataMessage.Header.MessageID);
+            if (_detectorDamageReportContext.Message.Where(o => o.MessageId == mID).Count() > 0)
+            {
+                return;
+            }
 
             var message = new Message();
             message.MessageId = Convert.ToInt64(detectorDataMessage.Header.MessageID);
@@ -45,6 +50,8 @@ namespace DetectorDamageReport.Models.DataManager
             _detectorDamageReportContext.Message.Add(message);
 
             var train = new Train();
+            train.IsHotBoxHotWheel = false;
+            train.IsWheelDamage = false;
             train.Message = message;
             var trainOperator = _detectorDamageReportContext.TrainOperator.Where(o => o.Name == detectorDataMessage.Train.Operator).FirstOrDefault();
             if (trainOperator == null)
@@ -153,7 +160,7 @@ namespace DetectorDamageReport.Models.DataManager
                                 wheelDamageMeasureDataVehicle.LeftRightLoadRatio = vme.MeasurementData.WheelDamageMeasureDataVehicle.LeftRightLoadRatio;
                                 wheelDamageMeasureDataVehicle.WeightInTons = vme.MeasurementData.WheelDamageMeasureDataVehicle.WeightInTons;
                                 _detectorDamageReportContext.WheelDamageMeasureDataVehicle.Add(wheelDamageMeasureDataVehicle);
-
+                                train.IsWheelDamage = true;
                             }
                         }
                     }
@@ -204,6 +211,7 @@ namespace DetectorDamageReport.Models.DataManager
                                 wheelDamageMeasureDataAxle.LeftRightLoadRatio = axmv.MeasurementData.WheelDamageMeasureDataAxle.LeftRightLoadRatio;
                                 wheelDamageMeasureDataAxle.MeasurementValue = mv;
                                 _detectorDamageReportContext.WheelDamageMeasureDataAxle.Add(wheelDamageMeasureDataAxle);
+                                train.IsWheelDamage = true;
                             }
                         }
                     }
@@ -265,6 +273,7 @@ namespace DetectorDamageReport.Models.DataManager
 
                                 hotBoxHotWheelMeasureWheelData.MeasurementValue = mv;
                                 _detectorDamageReportContext.HotBoxHotWheelMeasureWheelData.Add(hotBoxHotWheelMeasureWheelData);
+                                train.IsHotBoxHotWheel = true;
                             }
                             else if (measurementValues.DeviceType == "WHEELDAMAGE")
                             {
@@ -307,6 +316,8 @@ namespace DetectorDamageReport.Models.DataManager
                                 }
                                 wheelDamageMeasureDataWheel.MeasurementValue = mv;
                                 _detectorDamageReportContext.WheelDamageMeasureDataWheel.Add(wheelDamageMeasureDataWheel);
+                                train.IsWheelDamage = true;
+
                             }
                             _detectorDamageReportContext.MeasurementValue.Add(mv);
 
@@ -319,6 +330,9 @@ namespace DetectorDamageReport.Models.DataManager
                     //vehicle.Axle.Add(axle);
                 }
             }
+
+
+
             _detectorDamageReportContext.SaveChanges();
         }
 
