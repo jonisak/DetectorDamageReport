@@ -33,6 +33,7 @@ namespace DetectorDamageReport.Models.DataManager
                 .Include(x => x.Message).ThenInclude(x => x.Train)
                 .Include(x => x.Message).ThenInclude(x => x.Train).ThenInclude(x => x.TrainDirection)
                 .Include(x => x.Message).ThenInclude(x => x.Train).ThenInclude(x => x.TrainOperator)
+                .Include(x => x.Message).ThenInclude(x => x.Detector)
                 .Include(x => x.Vehicle)
                 .Include(x => x.TrainDirection)
                 .Include(x => x.TrainOperator)
@@ -136,12 +137,20 @@ namespace DetectorDamageReport.Models.DataManager
                     TrainNumber = train.TrainNumber,
                     TrainOperator = train.TrainOperator.Name,
                     MessageSent = train.Message.SendTimeStamp.ToShortDateString(),
-                    Detector = train.Message.LocationId,
+                    SGLN = train.Message.LocationId,
                     isWheelDamage = train.IsWheelDamage,
                     isHotBoxHotWheel = train.IsHotBoxHotWheel,
                     TrainHasAlarmItem = train.TrainHasAlarms,
+                    Detector = train.Message.DetectorId.HasValue ? new DetectorDTO()
+                    {
+                        DetectorId = train.Message.Detector.DetectorId,
+                        DetectorType = train.Message.Detector.DetectorType,
+                        Latitude = train.Message.Detector.Latitude,
+                        Longitude = train.Message.Detector.Longitude,
+                        Name = train.Message.Detector.Name,
+                        SGLN = train.Message.Detector.Sgln
+                    } : null,
                     VehicleCount = train.VehicleCount.HasValue ? train.VehicleCount.Value : 0,
-
                     TotalCount = totalCount ?? null
                 });
 

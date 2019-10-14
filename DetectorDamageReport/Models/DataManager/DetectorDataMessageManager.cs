@@ -40,6 +40,15 @@ namespace DetectorDamageReport.Models.DataManager
             message.SoftwareVersion = detectorDataMessage.Header.SoftwareVersion;
             message.SendTimeStamp = detectorDataMessage.Header.SendTimeStamp;
             message.LocationId = detectorDataMessage.Location.LocationID;
+
+
+            var detector = _detectorDamageReportContext.Detector.Where(o => o.Sgln == detectorDataMessage.Location.LocationID).FirstOrDefault();
+
+            if (detector != null)
+            {
+                message.Detector = detector;
+            }
+
             message.CountryCode = detectorDataMessage.Location.CountryCode;
             message.Owner = detectorDataMessage.Location.Owner;
             message.Track = detectorDataMessage.Location.Track;

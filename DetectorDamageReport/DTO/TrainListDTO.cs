@@ -16,10 +16,12 @@ namespace DetectorDamageReport.DTO
         public int VehicleCount { get; set; }
 
         public string MessageSent { get; set; }
-        public string Detector { get; set; }
+        public string SGLN { get; set; }
         public bool isWheelDamage { get; set; }
         public bool isHotBoxHotWheel { get; set; }
         public bool TrainHasAlarmItem { get; set; }
+
+        public DetectorDTO Detector { get; set; }
 
     }
 }

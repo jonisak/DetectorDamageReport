@@ -15,8 +15,11 @@ namespace DetectorDamageReport.Models
         {
         }
 
+        public virtual DbSet<AlarmReport> AlarmReport { get; set; }
+        public virtual DbSet<AlarmReportReason> AlarmReportReason { get; set; }
         public virtual DbSet<Alert> Alert { get; set; }
         public virtual DbSet<Axle> Axle { get; set; }
+        public virtual DbSet<Detector> Detector { get; set; }
         public virtual DbSet<DeviceType> DeviceType { get; set; }
         public virtual DbSet<HotBoxHotWheelMeasureWheelData> HotBoxHotWheelMeasureWheelData { get; set; }
         public virtual DbSet<MeasurementValue> MeasurementValue { get; set; }
@@ -44,6 +47,34 @@ namespace DetectorDamageReport.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
+            modelBuilder.Entity<AlarmReport>(entity =>
+            {
+                entity.Property(e => e.Comment).HasMaxLength(500);
+
+                entity.Property(e => e.ReportedDateTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AlarmReportReason)
+                    .WithMany(p => p.AlarmReport)
+                    .HasForeignKey(d => d.AlarmReportReasonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AlarmReport_AlarmReportReason");
+
+                entity.HasOne(d => d.Train)
+                    .WithMany(p => p.AlarmReport)
+                    .HasForeignKey(d => d.TrainId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AlarmReport_Train");
+            });
+
+            modelBuilder.Entity<AlarmReportReason>(entity =>
+            {
+                entity.Property(e => e.AlarmReportReasonId).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+            });
 
             modelBuilder.Entity<Alert>(entity =>
             {
@@ -91,6 +122,26 @@ namespace DetectorDamageReport.Models
                     .WithMany(p => p.Axle)
                     .HasForeignKey(d => d.VehicleId)
                     .HasConstraintName("FK_Axle_Vehicle");
+            });
+
+            modelBuilder.Entity<Detector>(entity =>
+            {
+                entity.Property(e => e.DetectorType)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Latitude).HasMaxLength(50);
+
+                entity.Property(e => e.Longitude).HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Sgln)
+                    .IsRequired()
+                    .HasColumnName("SGLN")
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<DeviceType>(entity =>
@@ -178,6 +229,11 @@ namespace DetectorDamageReport.Models
                 entity.Property(e => e.Vendor)
                     .IsRequired()
                     .HasMaxLength(255);
+
+                entity.HasOne(d => d.Detector)
+                    .WithMany(p => p.Message)
+                    .HasForeignKey(d => d.DetectorId)
+                    .HasConstraintName("FK_Message_Detector");
             });
 
             modelBuilder.Entity<Train>(entity =>

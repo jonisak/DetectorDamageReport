@@ -23,7 +23,6 @@ namespace DetectorDamageReport.Controllers
         {
 
         }
-        // POST: api/Employee
         [HttpPost]
         public IActionResult Post([FromBody] DetectorDataMessage detectorDataMessage)
         {

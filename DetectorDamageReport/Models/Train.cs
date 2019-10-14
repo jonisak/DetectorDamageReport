@@ -7,6 +7,7 @@ namespace DetectorDamageReport.Models
     {
         public Train()
         {
+            AlarmReport = new HashSet<AlarmReport>();
             Alert = new HashSet<Alert>();
             Vehicle = new HashSet<Vehicle>();
         }
@@ -24,6 +25,7 @@ namespace DetectorDamageReport.Models
         public virtual Message Message { get; set; }
         public virtual Traindirection TrainDirection { get; set; }
         public virtual TrainOperator TrainOperator { get; set; }
+        public virtual ICollection<AlarmReport> AlarmReport { get; set; }
         public virtual ICollection<Alert> Alert { get; set; }
         public virtual ICollection<Vehicle> Vehicle { get; set; }
     }
