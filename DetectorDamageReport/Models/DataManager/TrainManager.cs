@@ -65,10 +65,20 @@ namespace DetectorDamageReport.Models.DataManager
                 DateTime toDateValue;
                 if (DateTime.TryParse(trainFilterDTO.ToDate, out toDateValue))
                 {
-                   
+
                     query = query.Where(o => o.Message.SendTimeStamp < toDateValue.Date.AddDays(1));
                 }
             }
+
+
+            if (trainFilterDTO.SelectedDetectorsDTOList.Count > 0)
+            {
+                List<int> values = trainFilterDTO.SelectedDetectorsDTOList.Select(o => o.DetectorId).ToList();
+                List<int?> valuesCast = values.Cast<int?>().ToList();
+                query = query.Where(x => valuesCast.Contains(x.Message.DetectorId));
+            }
+
+
 
             var IsHotBoxHotWheel = false;
             var IsWheelDamage = false;

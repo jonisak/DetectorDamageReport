@@ -16,7 +16,6 @@ namespace DetectorDamageReport.Controllers
 
     public class TrainController : ControllerBase
     {
-        // GET: api/Employee
         [HttpPost]
         public ActionResult<List<TrainListDTO>> Get([FromBody] TrainFilterDTO trainFilterDTO)
         {

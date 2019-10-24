@@ -19,6 +19,9 @@ namespace DetectorDamageReport.DTO
 
 
         public List<DeviceTypeDTO> DeviceTypeDTOList { get; set; }
+        public List<DetectorDTO> SelectedDetectorsDTOList { get; set; }
+
+        
     }
 }
 
