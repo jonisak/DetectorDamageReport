@@ -22,6 +22,9 @@ namespace DetectorDamageReport.DTO
         public bool TrainHasAlarmItem { get; set; }
 
         public DetectorDTO Detector { get; set; }
+        public AlarmReportDTO AlarmReport { get; set; }
+
+        
 
     }
 }

@@ -23,14 +23,12 @@ namespace DetectorDamageReport.Controllers
         }
 
 
-        // GET: api/Employee
         [HttpGet("{id}")]
         public ActionResult<TrainDTO> Get(int id)
         {
             return new TrainManager().GetUserTrain(User.Identity.Name, id);
         }
 
-        // GET: api/Employee
         [HttpGet("Login")]
         public ActionResult Login()
         {

@@ -19,7 +19,7 @@ namespace DetectorDamageReport.Models.DataManager
             _detectorDamageReportContext = new DetectorDamageReportContext();
         }
 
-        public List<TrainListDTO> GetUserTrainList(String userId, TrainFilterDTO trainFilterDTO)
+        public List<TrainListDTO> GetUserTrainList(String userId, TrainFilterDTO trainFilterDTO, bool getAlarmsOnly = false)
         {
 
             int? totalCount = null;
@@ -39,10 +39,14 @@ namespace DetectorDamageReport.Models.DataManager
                 .Include(x => x.TrainOperator)
                 .AsQueryable();
 
-            if (trainFilterDTO.ShowTrainWithAlarmOnly)
+            if (trainFilterDTO.ShowTrainWithAlarmOnly || getAlarmsOnly)
             {
                 query = query.Where(o => o.TrainHasAlarms == true);
             }
+
+   
+
+
 
             if (trainFilterDTO.TrainNumber.Length > 0)
             {
@@ -79,6 +83,14 @@ namespace DetectorDamageReport.Models.DataManager
             }
 
 
+            if (trainFilterDTO.Sort == "LATEST")
+            {
+                query = query.OrderByDescending(o => o.Message.SendTimeStamp);
+            }
+            else
+            {
+                query = query.OrderBy(o => o.Message.SendTimeStamp);
+            }
 
             var IsHotBoxHotWheel = false;
             var IsWheelDamage = false;
@@ -146,8 +158,21 @@ namespace DetectorDamageReport.Models.DataManager
                     TrainDirection = train.TrainDirection.Name,
                     TrainNumber = train.TrainNumber,
                     TrainOperator = train.TrainOperator.Name,
-                    MessageSent = train.Message.SendTimeStamp.ToShortDateString(),
-                    SGLN = train.Message.LocationId,
+                    //MessageSent = train.Message.SendTimeStamp.ToShortDateString(),
+                    //MessageSent = train.Message.SendTimeStamp.ToUniversalTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture),
+                   // MessageSent = train.Message.SendTimeStamp.ToUniversalTime().ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz"),
+                    //MessageSent = train.Message.SendTimeStamp.ToString("o"),
+                    MessageSent = train.Message.SendTimeStamp.ToString("yyyy-MM-ddTHH:mm:ss.sssZ"),
+
+
+                    //AlarmReport = train.AlarmReport != null ? new AlarmReportDTO()
+                    //{
+                    //    AlarmReportId = train.AlarmReport
+
+                    //}
+                    //,
+
+                SGLN = train.Message.LocationId,
                     isWheelDamage = train.IsWheelDamage,
                     isHotBoxHotWheel = train.IsHotBoxHotWheel,
                     TrainHasAlarmItem = train.TrainHasAlarms,
@@ -162,6 +187,8 @@ namespace DetectorDamageReport.Models.DataManager
                     } : null,
                     VehicleCount = train.VehicleCount.HasValue ? train.VehicleCount.Value : 0,
                     TotalCount = totalCount ?? null
+
+                    
                 });
 
             }

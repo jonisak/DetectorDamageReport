@@ -14,10 +14,7 @@ namespace DetectorDamageReport.DTO
         public string TrainNumber { get; set; }
         public string FromDate { get; set; }
         public string ToDate { get; set; }
-
-    
-
-
+        public string Sort { get; set; }
         public List<DeviceTypeDTO> DeviceTypeDTOList { get; set; }
         public List<DetectorDTO> SelectedDetectorsDTOList { get; set; }
 

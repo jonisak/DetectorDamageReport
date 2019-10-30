@@ -35,6 +35,11 @@ namespace DetectorDamageReport.Controllers
         }
 
 
+        [HttpPost]
+        public ActionResult<List<TrainListDTO>> Get([FromBody] TrainFilterDTO trainFilterDTO)
+        {
+            return new TrainManager().GetUserTrainList(User.Identity.Name, trainFilterDTO, getAlarmsOnly:true);
+        }
 
 
 
