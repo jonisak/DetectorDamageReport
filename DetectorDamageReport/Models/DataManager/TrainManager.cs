@@ -44,14 +44,9 @@ namespace DetectorDamageReport.Models.DataManager
                 query = query.Where(o => o.TrainHasAlarms == true);
             }
 
-   
-
-
-
             if (trainFilterDTO.TrainNumber.Length > 0)
             {
                 query = query.Where(o => o.TrainNumber == trainFilterDTO.TrainNumber);
-
             }
 
 
@@ -195,9 +190,12 @@ namespace DetectorDamageReport.Models.DataManager
             return trainListDTOs;
         }
 
+        public TrainDTO GetTrain(long trainId)
+        {
+            return GetUserTrain("", trainId);
+        }
 
-
-        public TrainDTO GetUserTrain(String userId, int trainId)
+        public TrainDTO GetUserTrain(String userId, long trainId)
         {
 
             //Ta fram en lista med användarens alla tågoperatörer

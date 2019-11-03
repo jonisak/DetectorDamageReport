@@ -23,17 +23,132 @@ namespace DetectorDamageReport.Models.DataManager
         }
 
 
-        public void Add(AlarmReportDTO alarmReportDTO)
+        public AlarmReportDTO Add(AlarmReportDTO alarmReportDTO)
         {
-            var alarmReport = new AlarmReport();
-            alarmReport.AlarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReportDTO.alarmReportReasonDTO.AlarmReportReasonId).FirstOrDefault();
+            if (_detectorDamageReportContext.AlarmReport.Where(o => o.TrainId == alarmReportDTO.trainDTO.TrainId).Count() > 0)
+            {
+                return UpdateAlarmReport(alarmReportDTO);
+            }
+            else
+            {
+                var alarmReport = new AlarmReport();
+                alarmReport.AlarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReportDTO.alarmReportReasonDTO.AlarmReportReasonId).FirstOrDefault();
 
-            alarmReport.Comment = alarmReportDTO.Comment;
-            alarmReport.ReportedDateTime = Convert.ToDateTime(alarmReportDTO.ReportedDateTime);
-            alarmReport.TrainId = (long) alarmReportDTO.trainDTO.TrainId;
-            _detectorDamageReportContext.AlarmReport.Add(alarmReport);
-            _detectorDamageReportContext.SaveChanges();
+                alarmReport.Comment = alarmReportDTO.Comment;
+                alarmReport.ReportedDateTime = Convert.ToDateTime(alarmReportDTO.ReportedDateTime);
+                alarmReport.TrainId = (long)alarmReportDTO.trainDTO.TrainId;
+                _detectorDamageReportContext.AlarmReport.Add(alarmReport);
+                _detectorDamageReportContext.SaveChanges();
+                return GetAlarmReportById(alarmReport.AlarmReportId);
+            }
         }
+
+
+        public AlarmReportDTO GetAlarmReportByTrainId(int id)
+        {
+
+            var alarmReport = _detectorDamageReportContext.AlarmReport.Where(o => o.TrainId == id).FirstOrDefault();
+
+            if (alarmReport == null)
+            {
+                return null;
+            }
+
+            var alarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReport.AlarmReportId).FirstOrDefault();
+            if (alarmReportReason == null)
+            {
+                return null;
+            }
+
+
+            var alarmReportReasonDTO = new AlarmReportReasonDTO()
+            {
+                AlarmReportReasonId = alarmReportReason.AlarmReportReasonId
+                ,
+                Name = alarmReportReason.Name
+            };
+
+
+
+
+            return new AlarmReportDTO()
+            {
+                AlarmReportId = alarmReport.AlarmReportId
+                ,
+                alarmReportReasonDTO = alarmReportReasonDTO,
+                Comment = alarmReport.Comment,
+                ReportedDateTime = alarmReport.ReportedDateTime.ToString("yyyy-MM-ddTHH:mm:ss.sssZ"),
+                trainDTO = new TrainManager().GetTrain(alarmReport.TrainId)
+            };
+        }
+
+        public AlarmReportDTO GetAlarmReportById(int id)
+        {
+
+            var alarmReport = _detectorDamageReportContext.AlarmReport.Where(o => o.AlarmReportId == id).FirstOrDefault();
+
+            if (alarmReport == null)
+            {
+                return null;
+            }
+
+            var alarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReport.AlarmReportId).FirstOrDefault();
+            if (alarmReportReason == null)
+            {
+                return null;
+            }
+
+
+            var alarmReportReasonDTO = new AlarmReportReasonDTO()
+            {
+                AlarmReportReasonId = alarmReportReason.AlarmReportReasonId
+                ,
+                Name = alarmReportReason.Name
+            };
+
+
+
+
+            return new AlarmReportDTO()
+            {
+                AlarmReportId = alarmReport.AlarmReportId
+                ,
+                alarmReportReasonDTO = alarmReportReasonDTO,
+                Comment = alarmReport.Comment,
+                ReportedDateTime = alarmReport.ReportedDateTime.ToString("yyyy-MM-ddTHH:mm:ss.sssZ"),
+                trainDTO = new TrainManager().GetTrain(alarmReport.TrainId)
+            };
+        }
+
+
+        public AlarmReportDTO UpdateAlarmReport(AlarmReportDTO alarmReportDTO)
+        {
+
+            var alarmReport = _detectorDamageReportContext.AlarmReport.Where(o => o.AlarmReportId == alarmReportDTO.AlarmReportId).FirstOrDefault();
+
+            if (alarmReport == null)
+            {
+                return null;
+            }
+
+            var alarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReport.AlarmReportId).FirstOrDefault();
+            if (alarmReportReason == null)
+            {
+                return null;
+            }
+
+
+
+            alarmReport.AlarmReportReasonId = alarmReportReason.AlarmReportReasonId;
+            alarmReport.Comment = alarmReportDTO.Comment;
+
+            _detectorDamageReportContext.SaveChanges();
+
+            return GetAlarmReportById(alarmReport.AlarmReportId);
+        }
+
+
+
         //public List<TrainListDTO> GetUserAlarmReports(String userId, TrainFilterDTO trainFilterDTO)
         //{
         //    int? totalCount = null;

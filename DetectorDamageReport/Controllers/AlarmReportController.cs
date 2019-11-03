@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DetectorDamageReport.DTO;
-using DetectorDamageReport.Models;
-using DetectorDamageReport.Models.DataManager;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using DetectorDamageReport.Models.DataManager;
+using DetectorDamageReport.DTO;
 
 namespace DetectorDamageReport.Controllers
 {
@@ -19,29 +18,55 @@ namespace DetectorDamageReport.Controllers
     {
 
 
-        public AlarmReportController()
-        {
-
-        }
-        [HttpPost]
-        public IActionResult Post([FromBody] AlarmReportDTO alarmReportDTO)
-        {
-            if (alarmReportDTO == null)
-            {
-                return BadRequest("AlarmReportDTO is null.");
-            }
-            new AlarmReportManager().Add(alarmReportDTO);
-            return Ok();
-        }
-
 
         [HttpPost]
         public ActionResult<List<TrainListDTO>> Get([FromBody] TrainFilterDTO trainFilterDTO)
         {
-            return new TrainManager().GetUserTrainList(User.Identity.Name, trainFilterDTO, getAlarmsOnly:true);
+            return new TrainManager().GetUserTrainList(User.Identity.Name, trainFilterDTO, true);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<AlarmReportDTO> Get(int id)
+        {
+            var alarmReport = new AlarmReportManager().GetAlarmReportByTrainId(id);
+            if (alarmReport == null)
+            {
+                return NotFound("alarmReport is null.");
+            }
+
+            return alarmReport;
+
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<AlarmReportDTO> Put(int id, [FromBody] AlarmReportDTO alarmReportDTO)
+        {
+            if (alarmReportDTO == null)
+            {
+                return BadRequest("Alarmreport is null.");
+            }
+
+            AlarmReportDTO alarmReportToUpdate = new AlarmReportManager().GetAlarmReportById(id);
+            if (alarmReportToUpdate == null)
+            {
+                return NotFound("AlarmReport not found");
+            }
+            return new AlarmReportManager().UpdateAlarmReport(alarmReportDTO);
         }
 
 
+
+        [HttpPost]
+        public ActionResult<AlarmReportDTO> Post([FromBody] AlarmReportDTO alarmReportDTO)
+        {
+            if (alarmReportDTO == null)
+            {
+                return BadRequest("Alarmreport is null.");
+            }
+
+
+            return new AlarmReportManager().Add(alarmReportDTO);
+        }
 
     }
 }
