@@ -2,8 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace DetectorDamageReport.Models.DataManager
 {
@@ -25,7 +30,7 @@ namespace DetectorDamageReport.Models.DataManager
 
         public AlarmReportDTO Add(AlarmReportDTO alarmReportDTO)
         {
-            if (_detectorDamageReportContext.AlarmReport.Where(o => o.TrainId == alarmReportDTO.trainDTO.TrainId).Count() > 0)
+            if (alarmReportDTO.AlarmReportId != null)
             {
                 return UpdateAlarmReport(alarmReportDTO);
             }
@@ -36,7 +41,7 @@ namespace DetectorDamageReport.Models.DataManager
 
                 alarmReport.Comment = alarmReportDTO.Comment;
                 alarmReport.ReportedDateTime = Convert.ToDateTime(alarmReportDTO.ReportedDateTime);
-                alarmReport.TrainId = (long)alarmReportDTO.trainDTO.TrainId;
+                alarmReport.TrainId = (long)alarmReportDTO.TrainId;
                 _detectorDamageReportContext.AlarmReport.Add(alarmReport);
                 _detectorDamageReportContext.SaveChanges();
                 return GetAlarmReportById(alarmReport.AlarmReportId);
@@ -54,7 +59,7 @@ namespace DetectorDamageReport.Models.DataManager
                 return null;
             }
 
-            var alarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReport.AlarmReportId).FirstOrDefault();
+            var alarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReport.AlarmReportReasonId).FirstOrDefault();
             if (alarmReportReason == null)
             {
                 return null;
@@ -78,7 +83,8 @@ namespace DetectorDamageReport.Models.DataManager
                 alarmReportReasonDTO = alarmReportReasonDTO,
                 Comment = alarmReport.Comment,
                 ReportedDateTime = alarmReport.ReportedDateTime.ToString("yyyy-MM-ddTHH:mm:ss.sssZ"),
-                trainDTO = new TrainManager().GetTrain(alarmReport.TrainId)
+                TrainId = alarmReport.TrainId
+                //trainDTO = new TrainManager().GetTrain(alarmReport.TrainId)
             };
         }
 
@@ -92,7 +98,7 @@ namespace DetectorDamageReport.Models.DataManager
                 return null;
             }
 
-            var alarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReport.AlarmReportId).FirstOrDefault();
+            var alarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReport.AlarmReportReasonId).FirstOrDefault();
             if (alarmReportReason == null)
             {
                 return null;
@@ -116,7 +122,8 @@ namespace DetectorDamageReport.Models.DataManager
                 alarmReportReasonDTO = alarmReportReasonDTO,
                 Comment = alarmReport.Comment,
                 ReportedDateTime = alarmReport.ReportedDateTime.ToString("yyyy-MM-ddTHH:mm:ss.sssZ"),
-                trainDTO = new TrainManager().GetTrain(alarmReport.TrainId)
+                TrainId = alarmReport.TrainId
+                //trainDTO = new TrainManager().GetTrain(alarmReport.TrainId)
             };
         }
 
@@ -131,7 +138,7 @@ namespace DetectorDamageReport.Models.DataManager
                 return null;
             }
 
-            var alarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReport.AlarmReportId).FirstOrDefault();
+            var alarmReportReason = _detectorDamageReportContext.AlarmReportReason.Where(o => o.AlarmReportReasonId == alarmReportDTO.alarmReportReasonDTO.AlarmReportReasonId).FirstOrDefault();
             if (alarmReportReason == null)
             {
                 return null;
@@ -139,7 +146,7 @@ namespace DetectorDamageReport.Models.DataManager
 
 
 
-            alarmReport.AlarmReportReasonId = alarmReportReason.AlarmReportReasonId;
+            alarmReport.AlarmReportReason = alarmReportReason;
             alarmReport.Comment = alarmReportDTO.Comment;
 
             _detectorDamageReportContext.SaveChanges();
@@ -147,6 +154,37 @@ namespace DetectorDamageReport.Models.DataManager
             return GetAlarmReportById(alarmReport.AlarmReportId);
         }
 
+
+        public void UploadImage(AlarmReportImageDTO alarmReportImageDTO)
+        {
+            byte[] decodedStringInBytes = Convert.FromBase64String(alarmReportImageDTO.alarmReportImageBinDTO.Image);
+            MemoryStream imgStream = new MemoryStream();
+            using (Image<Rgba32> image = Image.Load(decodedStringInBytes))
+            {
+                image.Mutate(x => x
+                     .Resize(100, 100)
+                     .Grayscale());
+                image.Save(imgStream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
+
+            }
+
+            byte[] imageContent = imgStream.GetBuffer();
+            var alarmReportImage = new AlarmReportImage();
+            alarmReportImage.AlarmReportId = alarmReportImageDTO.AlarmReportId;
+            var alarmReportImageBin = new AlarmReportImageBin();
+            alarmReportImageBin.AlarmReportImage = alarmReportImage;
+            alarmReportImageBin.Image = decodedStringInBytes;
+            var alarmReportImageThumbnailBin = new AlarmReportImageThumbnailBin();
+            alarmReportImageThumbnailBin.AlarmReportImage = alarmReportImage;
+            alarmReportImageThumbnailBin.Image = imageContent;
+            alarmReportImage.Header = alarmReportImageDTO.Header;
+            alarmReportImage.Description = alarmReportImageDTO.Description;
+
+            _detectorDamageReportContext.AlarmReportImage.Add(alarmReportImage);
+            _detectorDamageReportContext.AlarmReportImageBin.Add(alarmReportImageBin);
+            _detectorDamageReportContext.AlarmReportImageThumbnailBin.Add(alarmReportImageThumbnailBin);
+            _detectorDamageReportContext.SaveChanges();
+        }
 
 
         //public List<TrainListDTO> GetUserAlarmReports(String userId, TrainFilterDTO trainFilterDTO)
@@ -309,4 +347,4 @@ namespace DetectorDamageReport.Models.DataManager
         //}
 
     }
-}
+    }

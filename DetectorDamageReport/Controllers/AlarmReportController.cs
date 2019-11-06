@@ -55,9 +55,23 @@ namespace DetectorDamageReport.Controllers
         }
 
 
-
+        [Route("SaveAlarmReport")]
         [HttpPost]
         public ActionResult<AlarmReportDTO> Post([FromBody] AlarmReportDTO alarmReportDTO)
+        {
+            if (alarmReportDTO == null)
+            {
+                return BadRequest("Alarmreport is null.");
+            }
+
+
+            return new AlarmReportManager().Add(alarmReportDTO);
+        }
+
+
+        [Route("UploadImage")]
+        [HttpPost]
+        public ActionResult<AlarmReportDTO> UploadImage([FromBody] AlarmReportDTO alarmReportDTO)
         {
             if (alarmReportDTO == null)
             {

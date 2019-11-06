@@ -7,9 +7,9 @@ namespace DetectorDamageReport.DTO
 {
     public class AlarmReportDTO
     {
-        public int AlarmReportId { get; set; }
+        public int? AlarmReportId { get; set; }
         public AlarmReportReasonDTO alarmReportReasonDTO { get; set; }
-        public TrainDTO trainDTO { get; set; }
+        public long TrainId { get; set; }
         public string ReportedDateTime { get; set; }
         public string Comment { get; set; }
 

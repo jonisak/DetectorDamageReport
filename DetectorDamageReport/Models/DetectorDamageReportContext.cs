@@ -16,6 +16,9 @@ namespace DetectorDamageReport.Models
         }
 
         public virtual DbSet<AlarmReport> AlarmReport { get; set; }
+        public virtual DbSet<AlarmReportImage> AlarmReportImage { get; set; }
+        public virtual DbSet<AlarmReportImageBin> AlarmReportImageBin { get; set; }
+        public virtual DbSet<AlarmReportImageThumbnailBin> AlarmReportImageThumbnailBin { get; set; }
         public virtual DbSet<AlarmReportReason> AlarmReportReason { get; set; }
         public virtual DbSet<Alert> Alert { get; set; }
         public virtual DbSet<Axle> Axle { get; set; }
@@ -65,6 +68,40 @@ namespace DetectorDamageReport.Models
                     .HasForeignKey(d => d.TrainId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AlarmReport_Train");
+            });
+
+            modelBuilder.Entity<AlarmReportImage>(entity =>
+            {
+                entity.Property(e => e.Header).HasMaxLength(255);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.AlarmReport)
+                    .WithMany(p => p.AlarmReportImage)
+                    .HasForeignKey(d => d.AlarmReportId)
+                    .HasConstraintName("FK_AlarmReportImage_AlarmReport");
+            });
+
+            modelBuilder.Entity<AlarmReportImageBin>(entity =>
+            {
+                entity.Property(e => e.Image).IsRequired();
+
+                entity.HasOne(d => d.AlarmReportImage)
+                    .WithMany(p => p.AlarmReportImageBin)
+                    .HasForeignKey(d => d.AlarmReportImageId)
+                    .HasConstraintName("FK_AlarmReportImageBin_AlarmReportImage");
+            });
+
+            modelBuilder.Entity<AlarmReportImageThumbnailBin>(entity =>
+            {
+                entity.Property(e => e.Image).IsRequired();
+
+                entity.HasOne(d => d.AlarmReportImage)
+                    .WithMany(p => p.AlarmReportImageThumbnailBin)
+                    .HasForeignKey(d => d.AlarmReportImageId)
+                    .HasConstraintName("FK_AlarmReportImageThumbnailBin_AlarmReportImage");
             });
 
             modelBuilder.Entity<AlarmReportReason>(entity =>
