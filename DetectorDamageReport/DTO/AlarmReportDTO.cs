@@ -12,6 +12,6 @@ namespace DetectorDamageReport.DTO
         public long TrainId { get; set; }
         public string ReportedDateTime { get; set; }
         public string Comment { get; set; }
-
-    }
+        public List<AlarmReportImageDTO> AlarmReportImageDTOList { get; set; }
+}
 }

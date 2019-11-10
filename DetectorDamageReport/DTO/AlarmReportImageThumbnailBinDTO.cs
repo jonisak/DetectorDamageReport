@@ -7,8 +7,7 @@ namespace DetectorDamageReport.DTO
 {
     public class AlarmReportImageThumbnailBinDTO
     {
-        public int AlarmReportImageThumbnailBinId { get; set; }
+        public int AlarmReportId { get; set; }
         public string Image { get; set; }
-        public int AlarmReportImageId { get; set; }
     }
 }

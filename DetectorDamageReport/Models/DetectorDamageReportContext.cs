@@ -72,12 +72,6 @@ namespace DetectorDamageReport.Models
 
             modelBuilder.Entity<AlarmReportImage>(entity =>
             {
-                entity.Property(e => e.Header).HasMaxLength(255);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
                 entity.HasOne(d => d.AlarmReport)
                     .WithMany(p => p.AlarmReportImage)
                     .HasForeignKey(d => d.AlarmReportId)
@@ -86,21 +80,29 @@ namespace DetectorDamageReport.Models
 
             modelBuilder.Entity<AlarmReportImageBin>(entity =>
             {
+                entity.HasKey(e => e.AlarmReportImageId);
+
+                entity.Property(e => e.AlarmReportImageId).ValueGeneratedNever();
+
                 entity.Property(e => e.Image).IsRequired();
 
                 entity.HasOne(d => d.AlarmReportImage)
-                    .WithMany(p => p.AlarmReportImageBin)
-                    .HasForeignKey(d => d.AlarmReportImageId)
+                    .WithOne(p => p.AlarmReportImageBin)
+                    .HasForeignKey<AlarmReportImageBin>(d => d.AlarmReportImageId)
                     .HasConstraintName("FK_AlarmReportImageBin_AlarmReportImage");
             });
 
             modelBuilder.Entity<AlarmReportImageThumbnailBin>(entity =>
             {
+                entity.HasKey(e => e.AlarmReportImageId);
+
+                entity.Property(e => e.AlarmReportImageId).ValueGeneratedNever();
+
                 entity.Property(e => e.Image).IsRequired();
 
                 entity.HasOne(d => d.AlarmReportImage)
-                    .WithMany(p => p.AlarmReportImageThumbnailBin)
-                    .HasForeignKey(d => d.AlarmReportImageId)
+                    .WithOne(p => p.AlarmReportImageThumbnailBin)
+                    .HasForeignKey<AlarmReportImageThumbnailBin>(d => d.AlarmReportImageId)
                     .HasConstraintName("FK_AlarmReportImageThumbnailBin_AlarmReportImage");
             });
 

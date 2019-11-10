@@ -38,6 +38,27 @@ namespace DetectorDamageReport.Controllers
 
         }
 
+
+
+        [Route("GetAlarmReportById")]
+        [HttpGet("{id}")]
+        ActionResult<AlarmReportDTO> GetAlarmReportById(int id)
+        {
+
+            var alarmReport = new AlarmReportManager().GetAlarmReportById(id);
+            if (alarmReport == null)
+            {
+                return NotFound("alarmReport is null.");
+            }
+
+            return alarmReport;
+
+
+        }
+
+
+
+
         [HttpPut("{id}")]
         public ActionResult<AlarmReportDTO> Put(int id, [FromBody] AlarmReportDTO alarmReportDTO)
         {
@@ -69,17 +90,18 @@ namespace DetectorDamageReport.Controllers
         }
 
 
-        [Route("UploadImage")]
+        [Route("UploadAlarmReportImage")]
         [HttpPost]
-        public ActionResult<AlarmReportDTO> UploadImage([FromBody] AlarmReportDTO alarmReportDTO)
+        public ActionResult UploadAlarmReportImage([FromBody] AlarmReportImageDTO alarmReportImageDTO)
         {
-            if (alarmReportDTO == null)
+            if (alarmReportImageDTO == null)
             {
-                return BadRequest("Alarmreport is null.");
+                return BadRequest("AlarmreportImage is null.");
             }
 
 
-            return new AlarmReportManager().Add(alarmReportDTO);
+            new AlarmReportManager().UploadAlarmReportImage(alarmReportImageDTO);
+            return Ok();
         }
 
     }

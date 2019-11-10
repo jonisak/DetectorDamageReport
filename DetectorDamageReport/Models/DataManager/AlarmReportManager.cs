@@ -74,7 +74,29 @@ namespace DetectorDamageReport.Models.DataManager
             };
 
 
+            var alarmReportImageList = _detectorDamageReportContext.AlarmReportImage.Include(x => x.AlarmReportImageBin).Include(x => x.AlarmReportImageThumbnailBin).Where(o => o.AlarmReportId == alarmReport.AlarmReportId).ToList();
+            var alarmReportImageDTOList = new List<AlarmReportImageDTO>();
 
+
+
+
+            foreach (var alarmReportImage in alarmReportImageList)
+            {
+
+
+                var alarmReportImageThumbnailBinDTO = new AlarmReportImageThumbnailBinDTO();
+                alarmReportImageThumbnailBinDTO.AlarmReportId = alarmReportImage.AlarmReportId;
+                alarmReportImageThumbnailBinDTO.Image = Convert.ToBase64String(alarmReportImage.AlarmReportImageThumbnailBin.Image.ToArray());
+
+                var alarmreportImageDTO = new AlarmReportImageDTO();
+                alarmreportImageDTO.AlarmReportId = alarmReportImage.AlarmReportId;
+                alarmreportImageDTO.AlarmReportImageId = alarmReportImage.AlarmReportImageId;
+                alarmreportImageDTO.Description = alarmReportImage.Description;
+                alarmreportImageDTO.AlarmReportImageThumbnailBinDTO = alarmReportImageThumbnailBinDTO;
+                alarmReportImageDTOList.Add(alarmreportImageDTO);
+
+
+            }
 
             return new AlarmReportDTO()
             {
@@ -83,7 +105,9 @@ namespace DetectorDamageReport.Models.DataManager
                 alarmReportReasonDTO = alarmReportReasonDTO,
                 Comment = alarmReport.Comment,
                 ReportedDateTime = alarmReport.ReportedDateTime.ToString("yyyy-MM-ddTHH:mm:ss.sssZ"),
-                TrainId = alarmReport.TrainId
+                TrainId = alarmReport.TrainId,
+                AlarmReportImageDTOList = alarmReportImageDTOList
+
                 //trainDTO = new TrainManager().GetTrain(alarmReport.TrainId)
             };
         }
@@ -112,18 +136,38 @@ namespace DetectorDamageReport.Models.DataManager
                 Name = alarmReportReason.Name
             };
 
+            var alarmReportImageList = _detectorDamageReportContext.AlarmReportImage.Include(x => x.AlarmReportImageBin).Include(x => x.AlarmReportImageThumbnailBin).Where(o => o.AlarmReportId == alarmReport.AlarmReportId).ToList();
+            var alarmReportImageDTOList = new List<AlarmReportImageDTO>();
 
 
+
+
+            foreach (var alarmReportImage in alarmReportImageList)
+            {
+
+
+                var alarmReportImageThumbnailBinDTO = new AlarmReportImageThumbnailBinDTO();
+                alarmReportImageThumbnailBinDTO.AlarmReportId = alarmReportImage.AlarmReportId;
+                alarmReportImageThumbnailBinDTO.Image = Convert.ToBase64String(alarmReportImage.AlarmReportImageThumbnailBin.Image.ToArray());
+
+                var alarmreportImageDTO = new AlarmReportImageDTO();
+                alarmreportImageDTO.AlarmReportId = alarmReportImage.AlarmReportId;
+                alarmreportImageDTO.AlarmReportImageId = alarmReportImage.AlarmReportImageId;
+                alarmreportImageDTO.Description = alarmReportImage.Description;
+                alarmreportImageDTO.AlarmReportImageThumbnailBinDTO = alarmReportImageThumbnailBinDTO;
+                alarmReportImageDTOList.Add(alarmreportImageDTO);
+
+
+            }
 
             return new AlarmReportDTO()
             {
-                AlarmReportId = alarmReport.AlarmReportId
-                ,
+                AlarmReportId = alarmReport.AlarmReportId,
                 alarmReportReasonDTO = alarmReportReasonDTO,
                 Comment = alarmReport.Comment,
                 ReportedDateTime = alarmReport.ReportedDateTime.ToString("yyyy-MM-ddTHH:mm:ss.sssZ"),
-                TrainId = alarmReport.TrainId
-                //trainDTO = new TrainManager().GetTrain(alarmReport.TrainId)
+                TrainId = alarmReport.TrainId,
+                AlarmReportImageDTOList = alarmReportImageDTOList
             };
         }
 
@@ -155,9 +199,9 @@ namespace DetectorDamageReport.Models.DataManager
         }
 
 
-        public void UploadImage(AlarmReportImageDTO alarmReportImageDTO)
+        public void UploadAlarmReportImage(AlarmReportImageDTO alarmReportImageDTO)
         {
-            byte[] decodedStringInBytes = Convert.FromBase64String(alarmReportImageDTO.alarmReportImageBinDTO.Image);
+            byte[] decodedStringInBytes = Convert.FromBase64String(alarmReportImageDTO.AlarmReportImageBinDTO.Image);
             MemoryStream imgStream = new MemoryStream();
             using (Image<Rgba32> image = Image.Load(decodedStringInBytes))
             {
@@ -177,13 +221,48 @@ namespace DetectorDamageReport.Models.DataManager
             var alarmReportImageThumbnailBin = new AlarmReportImageThumbnailBin();
             alarmReportImageThumbnailBin.AlarmReportImage = alarmReportImage;
             alarmReportImageThumbnailBin.Image = imageContent;
-            alarmReportImage.Header = alarmReportImageDTO.Header;
             alarmReportImage.Description = alarmReportImageDTO.Description;
 
             _detectorDamageReportContext.AlarmReportImage.Add(alarmReportImage);
             _detectorDamageReportContext.AlarmReportImageBin.Add(alarmReportImageBin);
             _detectorDamageReportContext.AlarmReportImageThumbnailBin.Add(alarmReportImageThumbnailBin);
             _detectorDamageReportContext.SaveChanges();
+
+        }
+
+
+        public List<AlarmReportImageDTO> GetAlarmReportImageThumbnailDTOs(int alarmReportId)
+        {
+
+            var alarmReportImageList = _detectorDamageReportContext.AlarmReportImage.Where(o => o.AlarmReportId == alarmReportId).ToList();
+
+            if (alarmReportImageList == null)
+            {
+                return null;
+            }
+
+
+
+            //var alarmReportImageDTOList = new List<AlarmReportImageDTO>();
+
+            //foreach (var alarmReportImage in alarmReportImageList)
+            //{
+
+            //    var alarmReportImageDTO = new AlarmReportImageDTO();
+            //    alarmReportImageDTO.AlarmReportId = alarmReportImage.AlarmReportId;
+            //    alarmReportImageDTO.
+
+
+            //}
+
+            //if (tu != null)
+            //{
+            //    us.USER_ID = tu.USER_ID.ToString();
+            //    us.FILE_TYPE = tu.FILE_TYPE;
+            //    us.IMAGE = tu.IMG != null ? System.Convert.ToBase64String(tu.IMG.ToArray()) : "";
+            //}
+            //return us;
+            return new List<AlarmReportImageDTO>();
         }
 
 
@@ -347,4 +426,4 @@ namespace DetectorDamageReport.Models.DataManager
         //}
 
     }
-    }
+}
