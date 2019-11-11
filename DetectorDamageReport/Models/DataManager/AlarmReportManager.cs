@@ -107,8 +107,6 @@ namespace DetectorDamageReport.Models.DataManager
                 ReportedDateTime = alarmReport.ReportedDateTime.ToString("yyyy-MM-ddTHH:mm:ss.sssZ"),
                 TrainId = alarmReport.TrainId,
                 AlarmReportImageDTOList = alarmReportImageDTOList
-
-                //trainDTO = new TrainManager().GetTrain(alarmReport.TrainId)
             };
         }
 
@@ -207,7 +205,7 @@ namespace DetectorDamageReport.Models.DataManager
             {
                 image.Mutate(x => x
                      .Resize(100, 100)
-                     .Grayscale());
+                     /*.Grayscale()*/);
                 image.Save(imgStream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
 
             }
@@ -215,6 +213,7 @@ namespace DetectorDamageReport.Models.DataManager
             byte[] imageContent = imgStream.GetBuffer();
             var alarmReportImage = new AlarmReportImage();
             alarmReportImage.AlarmReportId = alarmReportImageDTO.AlarmReportId;
+
             var alarmReportImageBin = new AlarmReportImageBin();
             alarmReportImageBin.AlarmReportImage = alarmReportImage;
             alarmReportImageBin.Image = decodedStringInBytes;
@@ -263,6 +262,48 @@ namespace DetectorDamageReport.Models.DataManager
             //}
             //return us;
             return new List<AlarmReportImageDTO>();
+        }
+
+
+        public AlarmReportImageDTO GetAlarmReportImage(int alarmReportImageId)
+        {
+            var alarmReportImage = _detectorDamageReportContext.AlarmReportImage.Include(x => x.AlarmReportImageBin).Include(x => x.AlarmReportImageThumbnailBin).Where(o => o.AlarmReportImageId == alarmReportImageId).FirstOrDefault();
+            if (alarmReportImage == null)
+            {
+                return null;
+            }
+
+            var alarmReportImageDTO = new AlarmReportImageDTO();
+            var alarmReportImageThumbnailBinDTO = new AlarmReportImageThumbnailBinDTO();
+            alarmReportImageThumbnailBinDTO.AlarmReportId = alarmReportImage.AlarmReportId;
+            alarmReportImageThumbnailBinDTO.Image = Convert.ToBase64String(alarmReportImage.AlarmReportImageThumbnailBin.Image.ToArray());
+
+            var alarmReportImageBinDTO = new AlarmReportImageBinDTO();
+            alarmReportImageBinDTO.AlarmReportId = alarmReportImage.AlarmReportId;
+            alarmReportImageBinDTO.Image = Convert.ToBase64String(alarmReportImage.AlarmReportImageBin.Image.ToArray());
+
+
+
+            var alarmreportImageDTO = new AlarmReportImageDTO();
+            alarmreportImageDTO.AlarmReportId = alarmReportImage.AlarmReportId;
+            alarmreportImageDTO.AlarmReportImageId = alarmReportImage.AlarmReportImageId;
+            alarmreportImageDTO.Description = alarmReportImage.Description;
+            alarmreportImageDTO.AlarmReportImageThumbnailBinDTO = alarmReportImageThumbnailBinDTO;
+            alarmreportImageDTO.AlarmReportImageBinDTO = alarmReportImageBinDTO;
+            return alarmreportImageDTO;
+        }
+
+        public void DeleteAlarmReportImage(int alarmReportImageId)
+        {
+            var alarmReportImage = _detectorDamageReportContext.AlarmReportImage.Include(x => x.AlarmReportImageBin).Include(x => x.AlarmReportImageThumbnailBin).Where(o => o.AlarmReportImageId == alarmReportImageId).FirstOrDefault();
+
+
+            if (alarmReportImage == null)
+            {
+                throw new Exception("Ett oväntat fel uppstod");
+            }
+            _detectorDamageReportContext.AlarmReportImage.Remove(alarmReportImage);
+            _detectorDamageReportContext.SaveChanges();
         }
 
 

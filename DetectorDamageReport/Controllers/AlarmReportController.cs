@@ -104,5 +104,34 @@ namespace DetectorDamageReport.Controllers
             return Ok();
         }
 
+
+        [Route("GetAlarmReportImage/{id}")]
+        [HttpGet]
+        public ActionResult<AlarmReportImageDTO> GetAlarmReportImage(int id)
+        {
+        
+            var alarmReportImageDTO = new AlarmReportManager().GetAlarmReportImage(id);
+            if (alarmReportImageDTO == null)
+            {
+                return NotFound("alarmReportImage is null.");
+            }
+
+            return alarmReportImageDTO;
+
+
+        }
+
+
+        [Route("DeleteAlarmReportImage/{id}")]
+        [HttpDelete]
+        public void DeleteAlarmReportImage(int id)
+        {
+
+             new AlarmReportManager().DeleteAlarmReportImage(id);
+            
+
+        }
+
+
     }
 }
